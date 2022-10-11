@@ -4,6 +4,7 @@ import {
   signInWithPopup,
   GoogleAuthProvider,
   FacebookAuthProvider,
+  TwitterAuthProvider,
 } from "firebase/auth";
 import { auth } from "../utils/firebase";
 import { useRouter } from "next/router";
@@ -14,6 +15,7 @@ export default function Home() {
   const [user, loading] = useAuthState(auth);
   const googleProvider = new GoogleAuthProvider();
   const facebookProvider = new FacebookAuthProvider();
+  const twitterProvider = new TwitterAuthProvider();
 
   async function googleLogin() {
     try {
@@ -27,6 +29,15 @@ export default function Home() {
   async function facebookLogin() {
     try {
       const result = await signInWithPopup(auth, facebookProvider);
+      route.push("/dashboard");
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async function twitterLogin() {
+    try {
+      const result = await signInWithPopup(auth, twitterProvider);
       route.push("/dashboard");
     } catch (error) {
       console.log(error);
@@ -54,6 +65,7 @@ export default function Home() {
             <h1>Brainstorm</h1>
             <button onClick={googleLogin}>Sign In with Google</button>
             <button onClick={facebookLogin}>Sign In with Facebook</button>
+            <button onClick={twitterLogin}>Sign In with Twitter</button>
           </main>
         </div>
       )}
