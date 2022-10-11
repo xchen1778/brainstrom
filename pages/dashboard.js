@@ -6,7 +6,7 @@ import { useDispatch } from "react-redux";
 import { setDropdown } from "../store/dropdown-slice";
 import { useRouter } from "next/router";
 
-function dashboard() {
+function Dashboard() {
   const [user, loading] = useAuthState(auth);
   const dispatch = useDispatch();
   const route = useRouter();
@@ -50,4 +50,4 @@ function dashboard() {
   );
 }
 
-export default dashboard;
+export default Dashboard;

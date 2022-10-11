@@ -7,7 +7,7 @@ import { useRouter } from "next/router";
 import { useDispatch } from "react-redux";
 import { setDropdown } from "../store/dropdown-slice";
 
-function profile() {
+function Profile() {
   const [user, loading] = useAuthState(auth);
   const route = useRouter();
   const dispatch = useDispatch();
@@ -49,4 +49,4 @@ function profile() {
   );
 }
 
-export default profile;
+export default Profile;
