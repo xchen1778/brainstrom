@@ -10,11 +10,12 @@ function Dropdown() {
           route.push("/profile");
         }}
       >
-        Your Ideas
+        Profile
       </button>
       <button
         onClick={() => {
           auth.signOut();
+          window.localStorage.removeItem("userId");
           route.push("/");
         }}
       >

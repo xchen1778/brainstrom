@@ -15,15 +15,18 @@ function Nav() {
       <Link href="/dashboard">
         <a>Brainstorm</a>
       </Link>
-      <button
-        onClick={(e) => {
-          e.stopPropagation();
-          dispatch(setDropdown(true));
-        }}
-      >
-        <img src={user?.photoURL} />
-      </button>
-      {dropdown && <Dropdown />}
+      <>
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            dispatch(setDropdown(!dropdown));
+          }}
+        >
+          <img src={user?.photoURL} />
+          <p>{user?.displayName}</p>
+        </button>
+        {dropdown && <Dropdown />}
+      </>
     </nav>
   );
 }
