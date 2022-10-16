@@ -1,11 +1,10 @@
-function debounce(callback, delay) {
+function debounce(callback, interval) {
   let timer;
-
-  return function () {
+  return function (...args) {
     clearTimeout(timer);
     timer = setTimeout(() => {
-      callback(...arguments);
-    }, delay);
+      callback(...args);
+    }, interval);
   };
 }
 

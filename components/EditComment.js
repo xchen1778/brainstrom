@@ -5,18 +5,22 @@ import { errorModal } from "../functions/errorModal";
 import { ToastContainer, Slide } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-function EditIdea({ id, idea, setEditOn }) {
-  const [editIdea, setEditIdea] = useState(idea);
+function EditComment({ id, comment, setEditOn }) {
+  const [editComment, setEditComment] = useState(comment);
 
   async function handleEdit(id) {
     try {
-      if (editIdea === idea || editIdea.length === 0 || editIdea.length > 300) {
+      if (
+        editComment === comment ||
+        editComment.length === 0 ||
+        editComment.length > 300
+      ) {
         errorModal("Invalid post. Please check again.");
         return;
       } else {
-        const ideaRef = doc(db, "ideas", id);
-        await updateDoc(ideaRef, {
-          idea: editIdea,
+        const commentRef = doc(db, "comments", id);
+        await updateDoc(commentRef, {
+          comment: editComment,
           timestamp: serverTimestamp(),
           edited: true,
         });
@@ -24,13 +28,6 @@ function EditIdea({ id, idea, setEditOn }) {
       }
     } catch (error) {
       console.log(error);
-    }
-  }
-
-  function handleEnterPress(e) {
-    if (e.keyCode === 13 && !e.shift && !e.altKey && !e.ctrlKey && !e.metaKey) {
-      e.preventDefault();
-      handleEdit(id);
     }
   }
 
@@ -42,17 +39,19 @@ function EditIdea({ id, idea, setEditOn }) {
           handleEdit(id);
         }}
       >
-        <textarea
-          value={editIdea}
+        <input
+          type="text"
+          value={editComment}
           onChange={(e) => {
-            setEditIdea(e.target.value);
+            setEditComment(e.target.value);
           }}
-          onKeyDown={handleEnterPress}
-        ></textarea>
-        <p>{editIdea.length}/300</p>
+        />
+        <p>{editComment.length}/300</p>
         <button
           disabled={
-            editIdea === idea || editIdea.length === 0 || editIdea.length > 300
+            editComment === comment ||
+            editComment.length === 0 ||
+            editComment.length > 300
           }
         >
           Done
@@ -77,4 +76,4 @@ function EditIdea({ id, idea, setEditOn }) {
   );
 }
 
-export default EditIdea;
+export default EditComment;

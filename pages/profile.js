@@ -69,7 +69,7 @@ function Profile() {
             <div>
               <h2>All my ideas</h2>
               {myIdeas?.map((idea) => (
-                <Idea key={idea.id} {...idea} profile={true} />
+                <Idea key={idea.id} {...idea} />
               ))}
             </div>
           </main>

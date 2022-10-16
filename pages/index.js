@@ -55,7 +55,6 @@ function Home() {
           route.push("/dashboard");
         }
       } catch (error) {
-        console.log(error.code);
         switch (error.code) {
           case "auth/missing-email":
             errorModal("Verification failed. You provided an incorrect email.");
@@ -83,7 +82,7 @@ function Home() {
       await signInWithPopup(auth, googleProvider);
       route.push("/dashboard");
     } catch (error) {
-      console.log(error.code);
+      console.log(error);
     }
   }
 
@@ -92,7 +91,7 @@ function Home() {
       await signInWithPopup(auth, facebookProvider);
       route.push("/dashboard");
     } catch (error) {
-      console.log(error.code);
+      console.log(error);
     }
   }
 
@@ -101,7 +100,7 @@ function Home() {
       await signInWithPopup(auth, twitterProvider);
       route.push("/dashboard");
     } catch (error) {
-      console.log(error.code);
+      console.log(error);
     }
   }
 
@@ -110,7 +109,7 @@ function Home() {
       await signInWithPopup(auth, githubProvider);
       route.push("/dashboard");
     } catch (error) {
-      console.log(error.code);
+      console.log(error);
     }
   }
 

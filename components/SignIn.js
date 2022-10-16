@@ -91,7 +91,7 @@ function SignIn() {
       await signInWithPopup(auth, googleProvider);
       route.push("/dashboard");
     } catch (error) {
-      console.log(error.code);
+      console.log(error);
     }
   }
 
@@ -100,7 +100,7 @@ function SignIn() {
       await signInWithPopup(auth, facebookProvider);
       route.push("/dashboard");
     } catch (error) {
-      console.log(error.code);
+      console.log(error);
     }
   }
 
@@ -109,7 +109,7 @@ function SignIn() {
       await signInWithPopup(auth, twitterProvider);
       route.push("/dashboard");
     } catch (error) {
-      console.log(error.code);
+      console.log(error);
     }
   }
 
@@ -118,7 +118,7 @@ function SignIn() {
       await signInWithPopup(auth, githubProvider);
       route.push("/dashboard");
     } catch (error) {
-      console.log(error.code);
+      console.log(error);
     }
   }
 
