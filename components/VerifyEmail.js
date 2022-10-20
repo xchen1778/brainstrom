@@ -5,8 +5,8 @@ import { errorModal } from "../functions/errorModal";
 import { useDispatch } from "react-redux";
 import { setVerifyEmail } from "../store/verifyEmail-slice";
 import { useRouter } from "next/router";
-import { ToastContainer, Slide } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import styles from "../styles/Verifyemail.module.scss";
+import { IoCloseCircle } from "react-icons/io5";
 
 function VerifyEmail() {
   const dispatch = useDispatch();
@@ -35,33 +35,31 @@ function VerifyEmail() {
   }
 
   return (
-    <div className="z-10">
-      <div onClick={() => dispatch(setVerifyEmail(false))}>X</div>
-      <form onSubmit={handleVerify}>
-        <input
-          type="text"
-          placeholder="Email"
-          value={emailForVerify}
-          onChange={(e) => {
-            setEmailForVerify(e.target.value);
-          }}
-        />
-        <button>Verify</button>
-      </form>
-      <ToastContainer
-        position="top-center"
-        autoClose={1500}
-        limit={5}
-        hideProgressBar
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="colored"
-        transition={Slide}
-      />
+    <div className={styles.verifyModal}>
+      <div
+        className={styles.verifyClose}
+        onClick={() => dispatch(setVerifyEmail(false))}
+      >
+        <IoCloseCircle />
+      </div>
+      <div className={styles.verifyContent}>
+        <h2 className={styles.verifyTitle}>Let's verify your account</h2>
+        <form className={styles.verifyForm} onSubmit={handleVerify}>
+          <div className={styles.verifyInput}>
+            <input
+              type="text"
+              placeholder="Email"
+              value={emailForVerify}
+              onChange={(e) => {
+                setEmailForVerify(e.target.value);
+              }}
+              id="verifyEmail"
+            />
+            <label htmlFor="verifyEmail">Email</label>
+          </div>
+          <button className={styles.verifyButton}>Verify</button>
+        </form>
+      </div>
     </div>
   );
 }

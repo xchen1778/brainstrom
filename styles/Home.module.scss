@@ -1,0 +1,157 @@
+@import "variables";
+
+.loginPageHidden {
+  margin: 0;
+  height: 100vh;
+  overflow: hidden;
+}
+.loginPage {
+  max-width: 67.5rem;
+  width: 85%;
+  margin: 0 auto;
+  margin-top: 4rem;
+
+  .loginHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .logoLink {
+      cursor: pointer;
+
+      .logo {
+        height: 2rem;
+      }
+    }
+
+    .loginText {
+      font-size: 0.9rem;
+      color: #949494;
+      cursor: pointer;
+      transition: color 200ms ease;
+
+      &:hover {
+        color: #1141a0;
+      }
+    }
+  }
+}
+
+.loginContent {
+  margin-top: 4rem;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  align-items: center;
+
+  .loginSection {
+    margin-top: 4rem;
+    display: flex;
+    flex-direction: column;
+    gap: 5rem;
+
+    .loginHeadline {
+      font-family: $header;
+      font-size: 3.5rem;
+      line-height: 1.2em;
+    }
+
+    .loginMethods {
+      display: flex;
+      flex-direction: column;
+      gap: 3rem;
+
+      .loginSubtitle {
+        font-size: 1.2rem;
+      }
+
+      .signUpButtons {
+        display: flex;
+        gap: 1rem;
+        color: white;
+        margin-top: 1rem;
+        cursor: pointer;
+
+        .signUpButton {
+          background-color: #206bff;
+          border-radius: 2em;
+          width: 3rem;
+          height: 3rem;
+          cursor: pointer;
+          transition: background-color 300ms ease;
+
+          &:hover {
+            background-color: #1141a0;
+          }
+        }
+      }
+
+      .signInButton {
+        background-color: #206bff;
+        color: white;
+        padding: 0.8em 2.5em;
+        border-radius: 2em;
+        margin-top: 1rem;
+        transition: background-color 300ms ease;
+        cursor: pointer;
+
+        &:hover {
+          background-color: #1141a0;
+        }
+      }
+    }
+  }
+}
+
+.footer {
+  margin-top: 5rem;
+  font-weight: 400;
+  color: #949494;
+  font-size: 0.8rem;
+  margin-bottom: 2rem;
+}
+
+@include tablet() {
+  .loginPage {
+    margin-top: 2.5rem;
+
+    .loginHeader {
+      .logoLink {
+        .logo {
+          height: 1.8rem;
+        }
+      }
+
+      .loginText {
+        font-size: 0.8rem;
+      }
+    }
+  }
+
+  .loginContent {
+    grid-template-columns: repeat(1, 1fr);
+
+    .loginSection {
+      gap: 3rem;
+
+      .loginHeadline {
+        font-size: 2.3rem;
+      }
+
+      .loginMethods {
+        gap: 2rem;
+
+        .loginSubtitle {
+          font-size: 1rem;
+        }
+      }
+    }
+
+    .imageSection {
+      order: -1;
+      .heroImage {
+        width: 80%;
+        margin: 0 auto;
+      }
+    }
+  }
+}

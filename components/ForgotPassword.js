@@ -8,6 +8,9 @@ import { setEmail } from "../store/email-slice";
 import { ToastContainer, Slide } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Blackscreen from "./Blackscreen";
+import EmailSent from "./EmailSent";
+import styles from "../styles/Forgot.module.scss";
+import { IoCloseCircle } from "react-icons/io5";
 
 function ForgotPassword() {
   const email = useSelector((store) => store.email);
@@ -20,6 +23,7 @@ function ForgotPassword() {
       await sendPasswordResetEmail(auth, email);
       dispatch(setResetModal(true));
     } catch (error) {
+      console.log(error.code);
       switch (error.code) {
         case "auth/invalid-email":
           errorModal("Please enter a valid email address.");
@@ -32,66 +36,39 @@ function ForgotPassword() {
   }
 
   return (
-    <>
-      <div className="z-10">
-        <div
-          onClick={() => {
-            dispatch(setForgotModal(false));
-            dispatch(setEmail(""));
-          }}
-        >
-          X
-        </div>
-        <form onSubmit={handleReset}>
-          <h1>Find your Brainstorm account</h1>
-          <input
-            type="text"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => {
-              dispatch(setEmail(e.target.value));
-            }}
-          />
-          <button>Search</button>
-        </form>
-        <ToastContainer
-          position="top-center"
-          autoClose={1500}
-          limit={5}
-          hideProgressBar
-          newestOnTop={false}
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-          theme="colored"
-          transition={Slide}
-        />
+    <div className={styles.forgotModal}>
+      <div
+        className={styles.forgotClose}
+        onClick={() => {
+          dispatch(setForgotModal(false));
+          dispatch(setEmail(""));
+        }}
+      >
+        <IoCloseCircle />
       </div>
-
-      {resetModal && (
-        <>
-          <div className="z-30">
-            <Blackscreen />
-          </div>
-          <div className="z-40">
-            <h3>
-              An email has been sent. (Sometimes it can be in your spam folder.)
-            </h3>
-            <button
-              onClick={() => {
-                dispatch(setResetModal(false));
-                dispatch(setForgotModal(false));
-                dispatch(setEmail(""));
-              }}
-            >
-              Back to home page
-            </button>
-          </div>
-        </>
+      {resetModal ? (
+        <EmailSent />
+      ) : (
+        <div className={styles.forgotContent}>
+          <h2 className={styles.forgotTitle}>Find your account</h2>
+          <form className={styles.forgotForm} onSubmit={handleReset}>
+            <div className={styles.forgotInput}>
+              <input
+                type="text"
+                placeholder="Email"
+                value={email}
+                onChange={(e) => {
+                  dispatch(setEmail(e.target.value));
+                }}
+                id="forgotEmail"
+              />
+              <label htmlFor="forgotEmail">Email</label>
+            </div>
+            <button className={styles.forgotButton}>Search</button>
+          </form>
+        </div>
       )}
-    </>
+    </div>
   );
 }
 

@@ -1,5 +1,7 @@
 import Head from "next/head";
-import { useState, useEffect } from "react";
+import Link from "next/link";
+import styles from "../styles/Home.module.scss";
+import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { setSignupModal } from "../store/signupModal-slice";
 import { setSigninModal } from "../store/signinModal-slice";
@@ -25,6 +27,12 @@ import { errorModal } from "../functions/errorModal";
 import { ToastContainer, Slide } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import VerifyEmail from "../components/VerifyEmail";
+import EmailIcon from "@mui/icons-material/Email";
+import GoogleIcon from "@mui/icons-material/Google";
+import FacebookIcon from "@mui/icons-material/Facebook";
+import TwitterIcon from "@mui/icons-material/Twitter";
+import GitHubIcon from "@mui/icons-material/GitHub";
+import { animated, useTransition } from "react-spring";
 // import Loading from "../components/Loading";
 
 function Home() {
@@ -118,51 +126,151 @@ function Home() {
   const debouncedTwitterLogin = debounce(twitterLogin, 300);
   const debouncedGithubLogin = debounce(githubLogin, 300);
 
+  const transitionSignup = useTransition(signupModal, {
+    from: { opacity: 0 },
+    enter: { opacity: 1 },
+    leave: { opacity: 0 },
+  });
+
+  const transitionSignin = useTransition(signinModal, {
+    from: { opacity: 0 },
+    enter: { opacity: 1 },
+    leave: { opacity: 0 },
+  });
+
+  const transitionForgot = useTransition(forgotModal, {
+    from: { opacity: 1 },
+    enter: { opacity: 1 },
+    leave: { opacity: 0 },
+  });
+  const transitionVerify = useTransition(verifyEmail, {
+    from: { opacity: 0 },
+    enter: { opacity: 1 },
+    leave: { opacity: 0 },
+  });
+
   return (
-    <div>
+    <div
+      className={`${styles.loginPage} ${
+        signupModal || signinModal || forgotModal || verifyEmail
+          ? styles.loginPageHidden
+          : ""
+      }`}
+    >
       <Head>
         <title>Brainstorm</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <div className="flex flex-col">
-        <h1>Join Brainstorm today!</h1>
-        <button onClick={debouncedGoogleLogin}>Sign Up with Google</button>
-        <button onClick={debouncedFacebookLogin}>Sign Up with Facebook</button>
-        <button onClick={debouncedTwitterLogin}>Sign Up with Twitter</button>
-        <button onClick={debouncedGithubLogin}>Sign Up with GitHub</button>
-        <p>or</p>
-        <button onClick={() => dispatch(setSignupModal(true))}>
-          Sign up with email
-        </button>
-        <h2>Already have an account?</h2>
-        <button onClick={() => dispatch(setSigninModal(true))}>Sign in</button>
-        {signupModal && (
-          <>
-            <Blackscreen />
-            <SignUp />
-          </>
-        )}
-        {signinModal && (
-          <>
-            <Blackscreen />
-            <SignIn />
-          </>
-        )}
-        {forgotModal && (
-          <>
-            <Blackscreen />
-            <ForgotPassword />
-          </>
-        )}
-        {verifyEmail && (
-          <>
-            <Blackscreen />
-            <VerifyEmail />
-          </>
-        )}
-        {/* {loadingPage && <Loading />} */}
-      </div>
+      <header className={styles.loginHeader}>
+        <Link href={"/"}>
+          <a className={styles.logoLink}>
+            <img className={styles.logo} src="/brainstorm-logo.png" />
+          </a>
+        </Link>
+        <Link href={"/dashboard"}>
+          <a className={styles.loginText}>Explore</a>
+        </Link>
+      </header>
+
+      <main className={styles.loginContent}>
+        <section className={styles.loginSection}>
+          <h1 className={styles.loginHeadline}>Let's share and collaborate!</h1>
+
+          <div className={styles.loginMethods}>
+            <div>
+              <h2 className={styles.loginSubtitle}>Sign up with</h2>
+              <div className={styles.signUpButtons}>
+                <button
+                  className={styles.signUpButton}
+                  onClick={() => dispatch(setSignupModal(true))}
+                >
+                  <EmailIcon />
+                </button>
+                <button
+                  className={styles.signUpButton}
+                  onClick={debouncedGoogleLogin}
+                >
+                  <GoogleIcon />
+                </button>
+                <button
+                  className={styles.signUpButton}
+                  onClick={debouncedFacebookLogin}
+                >
+                  <FacebookIcon />
+                </button>
+                <button
+                  className={styles.signUpButton}
+                  onClick={debouncedTwitterLogin}
+                >
+                  <TwitterIcon />
+                </button>
+                <button
+                  className={styles.signUpButton}
+                  onClick={debouncedGithubLogin}
+                >
+                  <GitHubIcon />
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <h2 className={styles.loginSubtitle}>Already have an account?</h2>
+              <button
+                className={styles.signInButton}
+                onClick={() => dispatch(setSigninModal(true))}
+              >
+                Sign in
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <section className={styles.imageSection}>
+          <img className={styles.heroImage} src="/login-page-graphic.png" />
+        </section>
+      </main>
+
+      <footer className={styles.footer}>&copy;2022 Brainstorm, Inc.</footer>
+
+      {transitionSignup(
+        (style, item) =>
+          item && (
+            <animated.div style={style}>
+              <Blackscreen />
+              <SignUp />
+            </animated.div>
+          )
+      )}
+
+      {transitionSignin(
+        (style, item) =>
+          item &&
+          !forgotModal && (
+            <animated.div style={style}>
+              <Blackscreen />
+              <SignIn />
+            </animated.div>
+          )
+      )}
+      {transitionForgot(
+        (style, item) =>
+          item && (
+            <animated.div style={style}>
+              <Blackscreen />
+              <ForgotPassword />
+            </animated.div>
+          )
+      )}
+      {transitionVerify(
+        (style, item) =>
+          item && (
+            <animated.div style={style}>
+              <Blackscreen />
+              <VerifyEmail />
+            </animated.div>
+          )
+      )}
 
       <ToastContainer
         position="top-center"
@@ -177,6 +285,7 @@ function Home() {
         pauseOnHover
         theme="colored"
         transition={Slide}
+        toastStyle={{ backgroundColor: "#206BFF" }}
       />
     </div>
   );

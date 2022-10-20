@@ -5,20 +5,21 @@ import { setForgotModal } from "../store/forgotModal-slice";
 import { setResetModal } from "../store/resetModal-slice";
 import { setEmail } from "../store/email-slice";
 import { setVerifyEmail } from "../store/verifyEmail-slice";
+import styles from "../styles/Blackscreen.module.scss";
 
 function Blackscreen() {
   const dispatch = useDispatch();
 
   return (
     <div
-      className="w-screen h-screen bg-slate-700 absolute top-0 left-0"
+      className={styles.blackscreen}
       onClick={() => {
-        dispatch(setSignupModal(false));
-        dispatch(setSigninModal(false));
-        dispatch(setForgotModal(false));
-        dispatch(setResetModal(false));
-        dispatch(setVerifyEmail(false));
-        dispatch(setEmail(""));
+        // dispatch(setSignupModal(false));
+        // dispatch(setSigninModal(false));
+        // dispatch(setForgotModal(false));
+        // dispatch(setResetModal(false));
+        // dispatch(setVerifyEmail(false));
+        // dispatch(setEmail(""));
       }}
     ></div>
   );

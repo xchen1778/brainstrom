@@ -1,0 +1,125 @@
+@import "variables";
+
+.forgotModal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #f6faff;
+  padding: 3rem;
+  border-radius: 1rem;
+  width: 30rem;
+
+  .forgotClose {
+    font-size: 1.8rem;
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    color: #171f44;
+    cursor: pointer;
+    transition: color 300ms ease;
+
+    &:hover {
+      color: #206bff;
+    }
+  }
+
+  .forgotContent {
+    margin-top: 1rem;
+    .forgotTitle {
+      font-family: $header;
+      font-size: 2rem;
+      text-align: center;
+      line-height: 1.2em;
+    }
+
+    .forgotForm {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      margin: 2rem 1rem;
+      margin-bottom: 1rem;
+
+      .forgotInput {
+        position: relative;
+
+        input {
+          width: 100%;
+          background: linear-gradient(
+            45deg,
+            rgba(255, 255, 255, 1) 0%,
+            rgba(255, 255, 255, 0.5) 100%
+          );
+          padding: 1.5rem 1.2rem;
+          padding-bottom: 0.4rem;
+          border-radius: 0.5rem;
+          border: 1px solid white;
+          box-shadow: 0 1px 12px rgb(0 0 0 / 5%);
+          font-weight: 400;
+
+          &::placeholder {
+            color: transparent;
+          }
+
+          &:focus {
+            outline-color: #206bff;
+          }
+        }
+
+        input:focus + label,
+        input:not(:placeholder-shown) + label {
+          transform: translateY(-0.6rem) scale(0.8);
+          color: #171f44;
+        }
+
+        label {
+          position: absolute;
+          top: 1rem;
+          left: 1.2rem;
+          color: #949494;
+          font-weight: 400;
+          transform-origin: 0 0;
+          transition: all 300ms ease;
+        }
+      }
+
+      .forgotButton {
+        margin-top: 0.8rem;
+        color: white;
+        background-color: #206bff;
+        padding: 0.8rem;
+        border-radius: 2rem;
+        width: 15rem;
+        align-self: center;
+        transition: background-color 300ms ease;
+        cursor: pointer;
+
+        &:hover {
+          background-color: #1141a0;
+        }
+      }
+    }
+  }
+}
+
+@include mobile() {
+  .forgotModal {
+    width: 95%;
+    padding: 2.6rem;
+    .forgotContent {
+      .forgotTitle {
+        font-size: 1.8rem;
+      }
+      .forgotForm {
+        gap: 1.5rem;
+        margin: 1.5rem 0;
+
+        button {
+          margin-top: 0.5rem;
+          padding: 0.8rem;
+          width: 10rem;
+        }
+      }
+    }
+  }
+}

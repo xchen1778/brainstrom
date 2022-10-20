@@ -18,9 +18,13 @@ import {
 import { debounce } from "../functions/debounce";
 import { errorModal } from "../functions/errorModal";
 import { useRouter } from "next/router";
-import Blackscreen from "./Blackscreen";
-import { ToastContainer, Slide } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import styles from "../styles/Signin.module.scss";
+import { IoCloseCircle } from "react-icons/io5";
+import GoogleIcon from "@mui/icons-material/Google";
+import FacebookIcon from "@mui/icons-material/Facebook";
+import TwitterIcon from "@mui/icons-material/Twitter";
+import GitHubIcon from "@mui/icons-material/GitHub";
+import EmailSent from "./EmailSent";
 
 function SignIn() {
   const email = useSelector((store) => store.email);
@@ -40,6 +44,9 @@ function SignIn() {
       route.push("/dashboard");
     } catch (error) {
       switch (error.code) {
+        case "auth/internal-error":
+          errorModal("Wrong password. Please try again.");
+          break;
         case "auth/wrong-password":
           errorModal("Wrong password. Please try again.");
           break;
@@ -131,49 +138,64 @@ function SignIn() {
   const debouncedLogin = debounce(login, 300);
 
   const loginContent = (
-    <div className="z-10">
-      <button onClick={debouncedGoogleLogin}>Sign Up with Google</button>
-      <button onClick={debouncedFacebookLogin}>Sign Up with Facebook</button>
-      <button onClick={debouncedTwitterLogin}>Sign Up with Twitter</button>
-      <button onClick={debouncedGithubLogin}>Sign Up with GitHub</button>
-      <form>
-        <input
-          type="text"
-          placeholder="Email"
-          required
-          value={email}
-          onChange={(e) => {
-            dispatch(setEmail(e.target.value));
-          }}
-        />
-        <button
-          onClick={(e) => {
-            e.preventDefault();
-            debouncedLoginWithPassword();
-          }}
-        >
-          Login with Password
+    <div className={styles.signinContent}>
+      <h2 className={styles.signinTitle}>Sign in to Brainstorm</h2>
+      <div className={styles.signinButtons}>
+        <button onClick={debouncedGoogleLogin}>
+          <GoogleIcon />
         </button>
-        <button
-          onClick={(e) => {
-            e.preventDefault();
-            debouncedLoginWithEmail();
-          }}
-        >
-          Login with Email Link
+        <button onClick={debouncedFacebookLogin}>
+          <FacebookIcon />
         </button>
+        <button onClick={debouncedTwitterLogin}>
+          {" "}
+          <TwitterIcon />
+        </button>
+        <button onClick={debouncedGithubLogin}>
+          <GitHubIcon />
+        </button>
+      </div>
+
+      <div className={styles.line}></div>
+      <p className={styles.orText}>or</p>
+      <form className={styles.signinForm}>
+        <div className={styles.signinInput}>
+          <input
+            type="text"
+            placeholder="Email"
+            required
+            value={email}
+            onChange={(e) => {
+              dispatch(setEmail(e.target.value));
+            }}
+            id="signinEmail"
+          />
+          <label htmlFor="signinEmail">Email</label>
+        </div>
+        <div className={styles.signinButtons}>
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              debouncedLoginWithPassword();
+            }}
+            className={styles.signinPassword}
+          >
+            Sign in with Password
+          </button>
+          <p className={styles.orText2}>or</p>
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              debouncedLoginWithEmail();
+            }}
+            className={styles.signinLink}
+          >
+            Sign in with Email Link
+          </button>
+        </div>
       </form>
-      <p
-        onClick={() => {
-          dispatch(setSignupModal(false));
-          dispatch(setSigninModal(false));
-          dispatch(setForgotModal(true));
-        }}
-      >
-        Forgot password?
-      </p>
-      <p>
-        Don't have an account?
+      <p className={styles.signupText}>
+        Don't have an account?&nbsp;
         <span
           onClick={() => {
             dispatch(setSigninModal(false));
@@ -188,27 +210,38 @@ function SignIn() {
   );
 
   const passwordContent = (
-    <div className="z-10">
-      <h2>Enter your password</h2>
+    <div className={styles.passwordContent}>
+      <h2 className={styles.passwordTitle}>Enter your password</h2>
       <form
+        className={styles.signinForm}
         onSubmit={(e) => {
           e.preventDefault();
           debouncedLogin();
         }}
       >
-        <input type="email" value={email} disabled />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          required
-          onChange={(e) => {
-            setPassword(e.target.value);
-          }}
-        />
-        <button>Log in</button>
+        <div className={styles.signinInput}>
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => dispatch(setEmail(e.target.value))}
+          />
+          <label htmlFor="signinEmailField">Email</label>
+        </div>
+        <div className={styles.signinInput}>
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => {
+              setPassword(e.target.value);
+            }}
+          />
+          <label htmlFor="signinPassword">Password</label>
+        </div>
+        <button className={styles.signinButton}>Log in</button>
       </form>
       <p
+        className={styles.forgotText}
         onClick={() => {
           dispatch(setSignupModal(false));
           dispatch(setSigninModal(false));
@@ -221,54 +254,23 @@ function SignIn() {
   );
 
   return (
-    <>
+    <div className={styles.signinModal}>
       <div
-        className="z-10"
+        className={styles.signinClose}
         onClick={() => {
           dispatch(setSigninModal(false));
           dispatch(setEmail(""));
         }}
       >
-        X
+        <IoCloseCircle />
       </div>
-      {passwordPage ? passwordContent : loginContent}
-      {emailLinkSent && (
-        <>
-          <div className="z-30">
-            <Blackscreen />
-          </div>
-          <div className="z-40">
-            <h1>
-              Email link has been sent. (Sometimes it is in your spam folder.)
-            </h1>
-            <button
-              onClick={() => {
-                dispatch(setSigninModal(false));
-                setEmailLinkSent(false);
-                dispatch(setEmail(""));
-              }}
-            >
-              Back to Home
-            </button>
-          </div>
-        </>
-      )}
 
-      <ToastContainer
-        position="top-center"
-        autoClose={1500}
-        limit={5}
-        hideProgressBar
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="colored"
-        transition={Slide}
-      />
-    </>
+      {!emailLinkSent ? (
+        <div>{passwordPage ? passwordContent : loginContent}</div>
+      ) : (
+        <EmailSent setEmailLinkSent={setEmailLinkSent} />
+      )}
+    </div>
   );
 }
 
