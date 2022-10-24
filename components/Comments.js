@@ -29,7 +29,7 @@ function Comments({ id, allComments }) {
 
   function getDifference(a, b, compareFunction) {
     return a.filter(
-      (acomment) => !b.some((bcomment) => compareFunction(acomment, bcomment))
+      (aComment) => !b.some((bComment) => compareFunction(aComment, bComment))
     );
   }
 

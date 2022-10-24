@@ -43,7 +43,7 @@ function VerifyEmail() {
         <IoCloseCircle />
       </div>
       <div className={styles.verifyContent}>
-        <h2 className={styles.verifyTitle}>Let's verify your account</h2>
+        <h2 className={styles.verifyTitle}>Let&apos;s verify your account</h2>
         <form className={styles.verifyForm} onSubmit={handleVerify}>
           <div className={styles.verifyInput}>
             <input

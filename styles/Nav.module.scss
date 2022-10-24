@@ -1,0 +1,74 @@
+@import "variables";
+.topNav {
+  position: relative;
+
+  .nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+
+    .logoLink {
+      position: relative;
+      left: 50%;
+      transform: translateX(-50%);
+      .logo {
+        height: 2rem;
+      }
+    }
+
+    .userProfile {
+      position: relative;
+      right: 0;
+      padding: 0.5rem;
+      border-radius: 5em;
+      transition: background-color 200ms ease;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+
+      &:hover {
+        background-color: #e2e2e2;
+      }
+
+      .userPhoto {
+        border-radius: 50%;
+        height: 2.5rem;
+      }
+    }
+
+    .signInUpButton {
+      color: white;
+      background-color: #206bff;
+      padding: 0.6rem 2rem;
+      border-radius: 2rem;
+      transition: background-color 300ms ease;
+
+      &:hover {
+        background-color: #171f44;
+      }
+    }
+  }
+}
+
+@include tablet() {
+  .topNav {
+    .nav {
+      .logoLink {
+        position: static;
+        transform: translateX(0%);
+        .logo {
+          height: 1.8rem;
+        }
+      }
+      .userIcon {
+        position: static;
+        .userProfile {
+          .userPhoto {
+            height: 2rem;
+          }
+        }
+      }
+    }
+  }
+}

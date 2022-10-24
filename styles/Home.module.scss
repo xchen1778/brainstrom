@@ -1,10 +1,5 @@
 @import "variables";
 
-.loginPageHidden {
-  margin: 0;
-  height: 100vh;
-  overflow: hidden;
-}
 .loginPage {
   max-width: 67.5rem;
   width: 85%;
@@ -28,7 +23,7 @@
       font-size: 0.9rem;
       color: #949494;
       cursor: pointer;
-      transition: color 200ms ease;
+      transition: color 300ms ease;
 
       &:hover {
         color: #1141a0;

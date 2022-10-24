@@ -7,13 +7,15 @@ import { setForgotModal } from "../store/forgotModal-slice";
 import { setResetModal } from "../store/resetModal-slice";
 import { setEmail } from "../store/email-slice";
 import { setVerifyEmail } from "../store/verifyEmail-slice";
+import styles from "../styles/Dropdown.module.scss";
 
 function Dropdown() {
   const dispatch = useDispatch();
   const route = useRouter();
   return (
-    <div className="flex flex-col">
+    <div className={styles.dropdown}>
       <button
+        className={styles.dropdownButton}
         onClick={() => {
           route.push("/profile");
         }}
@@ -21,6 +23,7 @@ function Dropdown() {
         Profile
       </button>
       <button
+        className={styles.dropdownButton}
         onClick={() => {
           auth.signOut();
           window.localStorage.removeItem("userId");
@@ -33,7 +36,7 @@ function Dropdown() {
           route.push("/");
         }}
       >
-        Sign Out
+        Sign out
       </button>
     </div>
   );

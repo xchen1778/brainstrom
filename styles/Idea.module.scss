@@ -1,0 +1,70 @@
+@import "variables";
+
+.idea {
+  background: linear-gradient(
+    45deg,
+    rgba(252, 254, 255, 1) 0%,
+    rgba(243, 248, 254, 0.5) 100%
+  );
+  border: 1px solid white;
+  box-shadow: 0 1px 12px rgb(0 0 0 / 5%);
+  border-radius: 0.8em;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  animation: fadeIn 300ms ease-out;
+  transition: all 300ms ease;
+  cursor: pointer;
+
+  &:hover {
+    background: linear-gradient(
+      45deg,
+      rgba(255, 255, 255, 1) 0%,
+      rgba(255, 255, 255, 0.5) 100%
+    );
+    transform: translateY(-5px);
+  }
+
+  .userInfo {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+
+    .userPhoto {
+      border-radius: 50%;
+      height: 3rem;
+    }
+
+    .postTime {
+      font-size: 0.8rem;
+      font-weight: 400;
+      color: #adadad;
+    }
+  }
+
+  .userIdea {
+    margin-top: 0.5rem;
+  }
+
+  .ideaButtons {
+    display: flex;
+    gap: 1rem;
+
+    .ideaCommentButton,
+    .ideaLikeButton {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      color: #adadad;
+    }
+
+    .fillComment {
+      color: #fec846;
+    }
+
+    .fillLike {
+      color: #ff7262;
+    }
+  }
+}

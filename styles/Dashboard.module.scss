@@ -1,0 +1,146 @@
+@import "variables";
+
+.dashboard {
+  max-width: 67.5rem;
+  width: 85%;
+  margin: 0 auto;
+  padding-top: 3rem;
+
+  .postIdeaForm {
+    background: linear-gradient(
+      45deg,
+      rgba(255, 255, 255, 1) 0%,
+      rgba(255, 255, 255, 0.5) 100%
+    );
+    border: 1px solid white;
+    max-width: 36rem;
+    width: 100%;
+    box-shadow: 0 1px 12px rgb(0 0 0 / 5%);
+    border-radius: 0.8em;
+    margin: 4rem auto;
+    margin-bottom: 5rem;
+    padding: 2rem 2rem;
+
+    .postIdeaInput {
+      display: flex;
+      gap: 1.2rem;
+
+      .postUser {
+        height: 3rem;
+        border-radius: 50%;
+        cursor: pointer;
+      }
+      .postIdeaArea {
+        width: 100%;
+        background: transparent;
+        resize: none;
+        overflow: hidden;
+        padding-right: 0.5rem;
+
+        &:focus {
+          outline: none;
+        }
+
+        &::placeholder {
+          color: #c5c5c5;
+        }
+      }
+    }
+
+    .postIdeaSubmitArea {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-left: 4rem;
+      margin-top: 2rem;
+
+      .textCount {
+        font-weight: 300;
+        font-size: 0.8rem;
+        color: #adadad;
+        visibility: hidden;
+      }
+
+      .textShowCount {
+        visibility: visible;
+      }
+
+      .textOverCount {
+        color: #ff7262;
+        font-weight: 500;
+      }
+
+      .postIdeaButtons {
+        position: relative;
+        right: 0;
+        display: flex;
+        gap: 2rem;
+
+        .postIdeaCancelButton {
+          color: #adadad;
+          transition: color 300ms ease;
+
+          &:hover {
+            color: #171f44;
+          }
+        }
+
+        .postIdeaSubmitButton {
+          color: white;
+          background-color: #206bff;
+          padding: 0.5rem 2rem;
+          border-radius: 2rem;
+          transition: background-color 300ms ease;
+
+          &:hover {
+            background-color: #171f44;
+          }
+
+          &:disabled {
+            background-color: #206bff;
+            cursor: not-allowed;
+          }
+        }
+      }
+    }
+  }
+
+  .latestIdeas {
+    position: relative;
+    z-index: 1;
+    padding: 4rem 0;
+
+    .latestIdeasTitle {
+      font-size: 1.7rem;
+      font-family: $header;
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    .lottie {
+      width: 8rem;
+      margin: 0 auto;
+      margin-top: -3rem;
+    }
+  }
+}
+
+@include mobile() {
+  .dashboard {
+    .postIdeaForm {
+      margin-top: 3rem;
+      margin-bottom: 3.5rem;
+      .postIdeaSubmitArea {
+        margin-left: 0;
+        margin-top: 3rem;
+      }
+    }
+
+    .latestIdeas {
+      padding: 2.5rem 0;
+      .latestIdeasTitle {
+        margin-bottom: 2.5rem;
+      }
+    }
+  }
+}

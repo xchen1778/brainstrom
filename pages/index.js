@@ -91,6 +91,11 @@ function Home() {
       route.push("/dashboard");
     } catch (error) {
       console.log(error);
+      switch (error.code) {
+        case "auth/account-exists-with-different-credential":
+          errorModal("An account already exists with this email.");
+          break;
+      }
     }
   }
 
@@ -100,6 +105,11 @@ function Home() {
       route.push("/dashboard");
     } catch (error) {
       console.log(error);
+      switch (error.code) {
+        case "auth/account-exists-with-different-credential":
+          errorModal("An account already exists with this email.");
+          break;
+      }
     }
   }
 
@@ -109,6 +119,11 @@ function Home() {
       route.push("/dashboard");
     } catch (error) {
       console.log(error);
+      switch (error.code) {
+        case "auth/account-exists-with-different-credential":
+          errorModal("An account already exists with this email.");
+          break;
+      }
     }
   }
 
@@ -118,6 +133,11 @@ function Home() {
       route.push("/dashboard");
     } catch (error) {
       console.log(error);
+      switch (error.code) {
+        case "auth/account-exists-with-different-credential":
+          errorModal("An account already exists with this email.");
+          break;
+      }
     }
   }
 
@@ -150,13 +170,7 @@ function Home() {
   });
 
   return (
-    <div
-      className={`${styles.loginPage} ${
-        signupModal || signinModal || forgotModal || verifyEmail
-          ? styles.loginPageHidden
-          : ""
-      }`}
-    >
+    <div className={styles.loginPage}>
       <Head>
         <title>Brainstorm</title>
         <link rel="icon" href="/favicon.ico" />
@@ -175,7 +189,9 @@ function Home() {
 
       <main className={styles.loginContent}>
         <section className={styles.loginSection}>
-          <h1 className={styles.loginHeadline}>Let's share and collaborate!</h1>
+          <h1 className={styles.loginHeadline}>
+            Let&apos;s share and collaborate!
+          </h1>
 
           <div className={styles.loginMethods}>
             <div>
@@ -274,7 +290,7 @@ function Home() {
 
       <ToastContainer
         position="top-center"
-        autoClose={1500}
+        autoClose={2000}
         limit={5}
         hideProgressBar
         newestOnTop={false}

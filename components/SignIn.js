@@ -195,7 +195,7 @@ function SignIn() {
         </div>
       </form>
       <p className={styles.signupText}>
-        Don't have an account?&nbsp;
+        Don&apos;t have an account?&nbsp;
         <span
           onClick={() => {
             dispatch(setSigninModal(false));
