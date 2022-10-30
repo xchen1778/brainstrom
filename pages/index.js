@@ -6,6 +6,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { setSignupModal } from "../store/signupModal-slice";
 import { setSigninModal } from "../store/signinModal-slice";
 import { setVerifyEmail } from "../store/verifyEmail-slice";
+import { setLoadingPage } from "../store/loadingPage-slice";
 import { auth } from "../utils/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import {
@@ -27,13 +28,10 @@ import { errorModal } from "../functions/errorModal";
 import { ToastContainer, Slide } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import VerifyEmail from "../components/VerifyEmail";
-import EmailIcon from "@mui/icons-material/Email";
-import GoogleIcon from "@mui/icons-material/Google";
-import FacebookIcon from "@mui/icons-material/Facebook";
-import TwitterIcon from "@mui/icons-material/Twitter";
-import GitHubIcon from "@mui/icons-material/GitHub";
+import { MdEmail } from "react-icons/md";
+import { FaGoogle, FaFacebookF, FaTwitter, FaGithub } from "react-icons/fa";
 import { animated, useTransition } from "react-spring";
-// import Loading from "../components/Loading";
+import Loading from "../components/Loading";
 
 function Home() {
   const googleProvider = new GoogleAuthProvider();
@@ -44,10 +42,30 @@ function Home() {
   const signinModal = useSelector((store) => store.signinModal);
   const forgotModal = useSelector((store) => store.forgotModal);
   const verifyEmail = useSelector((store) => store.verifyEmail);
-  // const [loadingPage, setLoadingPage] = useState(false);
   const dispatch = useDispatch();
+  const loadingPage = useSelector((store) => store.loadingPage);
   const route = useRouter();
   const [user, loading] = useAuthState(auth);
+  const transitionSignup = useTransition(signupModal, {
+    from: { opacity: 1 },
+    enter: { opacity: 1 },
+    leave: { opacity: 0 },
+  });
+  const transitionSignin = useTransition(signinModal, {
+    from: { opacity: 1 },
+    enter: { opacity: 1 },
+    leave: { opacity: 0 },
+  });
+  const transitionForgot = useTransition(forgotModal, {
+    from: { opacity: 1 },
+    enter: { opacity: 1 },
+    leave: { opacity: 0 },
+  });
+  const transitionVerify = useTransition(verifyEmail, {
+    from: { opacity: 1 },
+    enter: { opacity: 1 },
+    leave: { opacity: 0 },
+  });
 
   useEffect(() => {
     async function signInEmailLink() {
@@ -61,6 +79,7 @@ function Home() {
           await signInWithEmailLink(auth, savedEmail, window.location.href);
           window.localStorage.removeItem("emailForSignIn");
           route.push("/dashboard");
+          dispatch(setLoadingPage(true));
         }
       } catch (error) {
         switch (error.code) {
@@ -77,11 +96,17 @@ function Home() {
       }
     }
     signInEmailLink();
+    dispatch(setLoadingPage(false));
   }, []);
 
   useEffect(() => {
+    dispatch(setLoadingPage(true));
     if (user && !loading) {
-      route.push("/dashboard");
+      setTimeout(() => {
+        route.push("/dashboard");
+      }, 500);
+    } else {
+      dispatch(setLoadingPage(false));
     }
   }, [user, loading]);
 
@@ -89,6 +114,7 @@ function Home() {
     try {
       await signInWithPopup(auth, googleProvider);
       route.push("/dashboard");
+      dispatch(setLoadingPage(true));
     } catch (error) {
       console.log(error);
       switch (error.code) {
@@ -103,6 +129,7 @@ function Home() {
     try {
       await signInWithPopup(auth, facebookProvider);
       route.push("/dashboard");
+      dispatch(setLoadingPage(true));
     } catch (error) {
       console.log(error);
       switch (error.code) {
@@ -117,6 +144,7 @@ function Home() {
     try {
       await signInWithPopup(auth, twitterProvider);
       route.push("/dashboard");
+      dispatch(setLoadingPage(true));
     } catch (error) {
       console.log(error);
       switch (error.code) {
@@ -131,6 +159,7 @@ function Home() {
     try {
       await signInWithPopup(auth, githubProvider);
       route.push("/dashboard");
+      dispatch(setLoadingPage(true));
     } catch (error) {
       console.log(error);
       switch (error.code) {
@@ -140,34 +169,10 @@ function Home() {
       }
     }
   }
-
   const debouncedGoogleLogin = debounce(googleLogin, 300);
   const debouncedFacebookLogin = debounce(facebookLogin, 300);
   const debouncedTwitterLogin = debounce(twitterLogin, 300);
   const debouncedGithubLogin = debounce(githubLogin, 300);
-
-  const transitionSignup = useTransition(signupModal, {
-    from: { opacity: 0 },
-    enter: { opacity: 1 },
-    leave: { opacity: 0 },
-  });
-
-  const transitionSignin = useTransition(signinModal, {
-    from: { opacity: 0 },
-    enter: { opacity: 1 },
-    leave: { opacity: 0 },
-  });
-
-  const transitionForgot = useTransition(forgotModal, {
-    from: { opacity: 1 },
-    enter: { opacity: 1 },
-    leave: { opacity: 0 },
-  });
-  const transitionVerify = useTransition(verifyEmail, {
-    from: { opacity: 0 },
-    enter: { opacity: 1 },
-    leave: { opacity: 0 },
-  });
 
   return (
     <div className={styles.loginPage}>
@@ -175,24 +180,27 @@ function Home() {
         <title>Brainstorm</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-
       <header className={styles.loginHeader}>
         <Link href={"/"}>
           <a className={styles.logoLink}>
             <img className={styles.logo} src="/brainstorm-logo.png" />
           </a>
         </Link>
-        <Link href={"/dashboard"}>
-          <a className={styles.loginText}>Explore</a>
-        </Link>
+        <a
+          className={styles.loginText}
+          onClick={() => {
+            dispatch(setLoadingPage(true));
+            route.push("/dashboard");
+          }}
+        >
+          Explore
+        </a>
       </header>
-
       <main className={styles.loginContent}>
         <section className={styles.loginSection}>
           <h1 className={styles.loginHeadline}>
             Let&apos;s share and collaborate!
           </h1>
-
           <div className={styles.loginMethods}>
             <div>
               <h2 className={styles.loginSubtitle}>Sign up with</h2>
@@ -201,35 +209,34 @@ function Home() {
                   className={styles.signUpButton}
                   onClick={() => dispatch(setSignupModal(true))}
                 >
-                  <EmailIcon />
+                  <MdEmail />
                 </button>
                 <button
                   className={styles.signUpButton}
                   onClick={debouncedGoogleLogin}
                 >
-                  <GoogleIcon />
+                  <FaGoogle />
                 </button>
                 <button
                   className={styles.signUpButton}
                   onClick={debouncedFacebookLogin}
                 >
-                  <FacebookIcon />
+                  <FaFacebookF />
                 </button>
                 <button
                   className={styles.signUpButton}
                   onClick={debouncedTwitterLogin}
                 >
-                  <TwitterIcon />
+                  <FaTwitter />
                 </button>
                 <button
                   className={styles.signUpButton}
                   onClick={debouncedGithubLogin}
                 >
-                  <GitHubIcon />
+                  <FaGithub />
                 </button>
               </div>
             </div>
-
             <div>
               <h2 className={styles.loginSubtitle}>Already have an account?</h2>
               <button
@@ -241,20 +248,19 @@ function Home() {
             </div>
           </div>
         </section>
-
         <section className={styles.imageSection}>
           <img className={styles.heroImage} src="/login-page-graphic.png" />
         </section>
       </main>
-
       <footer className={styles.footer}>&copy;2022 Brainstorm, Inc.</footer>
-
+      {(signinModal || signupModal || forgotModal || verifyEmail) && (
+        <Blackscreen />
+      )}
       {transitionSignup(
         (style, item) =>
           item && (
             <animated.div style={style}>
-              <Blackscreen />
-              <SignUp />
+              <SignUp isHomePage={true} />
             </animated.div>
           )
       )}
@@ -264,8 +270,7 @@ function Home() {
           item &&
           !forgotModal && (
             <animated.div style={style}>
-              <Blackscreen />
-              <SignIn />
+              <SignIn isHomePage={true} />
             </animated.div>
           )
       )}
@@ -273,7 +278,6 @@ function Home() {
         (style, item) =>
           item && (
             <animated.div style={style}>
-              <Blackscreen />
               <ForgotPassword />
             </animated.div>
           )
@@ -282,12 +286,11 @@ function Home() {
         (style, item) =>
           item && (
             <animated.div style={style}>
-              <Blackscreen />
-              <VerifyEmail />
+              <VerifyEmail isHomePage={true} />
             </animated.div>
           )
       )}
-
+      {loadingPage && <Loading />}
       <ToastContainer
         position="top-center"
         autoClose={2000}

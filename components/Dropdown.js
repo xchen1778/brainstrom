@@ -7,18 +7,25 @@ import { setForgotModal } from "../store/forgotModal-slice";
 import { setResetModal } from "../store/resetModal-slice";
 import { setEmail } from "../store/email-slice";
 import { setVerifyEmail } from "../store/verifyEmail-slice";
+import { setLoadingPage } from "../store/loadingPage-slice";
 import styles from "../styles/Dropdown.module.scss";
 
-function Dropdown() {
+function Dropdown({ isProfile }) {
   const dispatch = useDispatch();
   const route = useRouter();
   return (
     <div className={styles.dropdown}>
       <button
-        className={styles.dropdownButton}
+        className={`${styles.dropdownButton} ${
+          isProfile ? styles.profileButton : ""
+        }`}
         onClick={() => {
-          route.push("/profile");
+          if (!isProfile) {
+            route.push("/profile");
+            dispatch(setLoadingPage(true));
+          }
         }}
+        disabled={isProfile}
       >
         Profile
       </button>
@@ -33,7 +40,6 @@ function Dropdown() {
           dispatch(setResetModal(false));
           dispatch(setVerifyEmail(false));
           dispatch(setEmail(""));
-          route.push("/");
         }}
       >
         Sign out

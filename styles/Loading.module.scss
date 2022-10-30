@@ -1,0 +1,16 @@
+.loadingPage {
+  width: 100vw;
+  height: 100vh;
+  background-color: #f3f8fe;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 99;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  .loadingIcon {
+    width: 10rem;
+  }
+}

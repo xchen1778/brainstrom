@@ -1,0 +1,86 @@
+@import "variables";
+
+.editForm {
+  margin: 1rem -2rem;
+  background: linear-gradient(
+    45deg,
+    rgba(252, 254, 255, 1) 0%,
+    rgba(243, 248, 254, 0.5) 100%
+  );
+  border: 1px solid white;
+  box-shadow: 0 1px 12px rgb(0 0 0 / 5%);
+  border-radius: 0.8em;
+  padding: 2rem;
+  animation: fadeIn 300ms ease;
+
+  .editTextArea {
+    width: 100%;
+    background-color: transparent;
+    resize: none;
+    overflow: hidden;
+    padding-right: 0.5rem;
+
+    &:focus {
+      outline: none;
+    }
+  }
+
+  .editCommentSubmit {
+    display: flex;
+    justify-content: space-between;
+    animation: fadeIn 300ms ease;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1rem;
+
+    .textCount {
+      font-weight: 300;
+      font-size: 0.8rem;
+      color: #adadad;
+      visibility: hidden;
+    }
+
+    .textShowCount {
+      visibility: visible;
+    }
+
+    .textOverCount {
+      color: #ff7262;
+      font-weight: 500;
+    }
+
+    .editCommentButtons {
+      position: relative;
+      right: 0;
+      display: flex;
+      gap: 2rem;
+
+      .editCommentCancelButton {
+        color: #adadad;
+        transition: color 300ms ease;
+
+        &:hover {
+          color: #171f44;
+        }
+      }
+
+      .editCommentSubmitButton {
+        color: white;
+        background-color: #206bff;
+        padding: 0.5rem 2rem;
+        border-radius: 2rem;
+        transition: background-color 300ms ease;
+
+        &:hover {
+          background-color: #171f44;
+        }
+
+        &:disabled {
+          background-color: #206bff;
+          cursor: not-allowed;
+        }
+      }
+    }
+  }
+}

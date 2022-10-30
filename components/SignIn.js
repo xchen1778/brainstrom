@@ -4,6 +4,7 @@ import { setSignupModal } from "../store/signupModal-slice";
 import { setSigninModal } from "../store/signinModal-slice";
 import { setForgotModal } from "../store/forgotModal-slice";
 import { setEmail } from "../store/email-slice";
+import { setLoadingPage } from "../store/loadingPage-slice";
 import { auth } from "../utils/firebase";
 import {
   signInWithEmailAndPassword,
@@ -20,13 +21,11 @@ import { errorModal } from "../functions/errorModal";
 import { useRouter } from "next/router";
 import styles from "../styles/Signin.module.scss";
 import { IoCloseCircle } from "react-icons/io5";
-import GoogleIcon from "@mui/icons-material/Google";
-import FacebookIcon from "@mui/icons-material/Facebook";
-import TwitterIcon from "@mui/icons-material/Twitter";
-import GitHubIcon from "@mui/icons-material/GitHub";
+import { FaGoogle, FaFacebookF, FaTwitter, FaGithub } from "react-icons/fa";
 import EmailSent from "./EmailSent";
+import { useAuthState } from "react-firebase-hooks/auth";
 
-function SignIn() {
+function SignIn({ isHomePage }) {
   const email = useSelector((store) => store.email);
   const [password, setPassword] = useState("");
   const [emailLinkSent, setEmailLinkSent] = useState(false);
@@ -37,11 +36,21 @@ function SignIn() {
   const facebookProvider = new FacebookAuthProvider();
   const twitterProvider = new TwitterAuthProvider();
   const githubProvider = new GithubAuthProvider();
+  const [user, loading] = useAuthState(auth);
+
+  function closeAllModals() {
+    dispatch(setSigninModal(false));
+    dispatch(setSignupModal(false));
+    dispatch(setForgotModal(false));
+    window.localStorage.setItem("userId", user.uid);
+  }
 
   async function login() {
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      route.push("/dashboard");
+      isHomePage && dispatch(setLoadingPage(true));
+      closeAllModals();
+      isHomePage && route.push("/dashboard");
     } catch (error) {
       switch (error.code) {
         case "auth/internal-error":
@@ -78,7 +87,7 @@ function SignIn() {
         errorModal("We didn't find an account with this email address.");
       } else {
         await sendSignInLinkToEmail(auth, email, {
-          url: "http://localhost:3000/",
+          url: "https://brainstorm-5dbab.web.app/",
           handleCodeInApp: true,
         });
         window.localStorage.setItem("emailForSignIn", email);
@@ -96,7 +105,9 @@ function SignIn() {
   async function googleLogin() {
     try {
       await signInWithPopup(auth, googleProvider);
-      route.push("/dashboard");
+      isHomePage && dispatch(setLoadingPage(true));
+      closeAllModals();
+      isHomePage && route.push("/dashboard");
     } catch (error) {
       console.log(error);
     }
@@ -105,7 +116,9 @@ function SignIn() {
   async function facebookLogin() {
     try {
       await signInWithPopup(auth, facebookProvider);
-      route.push("/dashboard");
+      isHomePage && dispatch(setLoadingPage(true));
+      closeAllModals();
+      isHomePage && route.push("/dashboard");
     } catch (error) {
       console.log(error);
     }
@@ -114,7 +127,9 @@ function SignIn() {
   async function twitterLogin() {
     try {
       await signInWithPopup(auth, twitterProvider);
-      route.push("/dashboard");
+      isHomePage && dispatch(setLoadingPage(true));
+      closeAllModals();
+      isHomePage && route.push("/dashboard");
     } catch (error) {
       console.log(error);
     }
@@ -123,7 +138,9 @@ function SignIn() {
   async function githubLogin() {
     try {
       await signInWithPopup(auth, githubProvider);
-      route.push("/dashboard");
+      isHomePage && dispatch(setLoadingPage(true));
+      closeAllModals();
+      isHomePage && route.push("/dashboard");
     } catch (error) {
       console.log(error);
     }
@@ -142,17 +159,16 @@ function SignIn() {
       <h2 className={styles.signinTitle}>Sign in to Brainstorm</h2>
       <div className={styles.signinButtons}>
         <button onClick={debouncedGoogleLogin}>
-          <GoogleIcon />
+          <FaGoogle />
         </button>
         <button onClick={debouncedFacebookLogin}>
-          <FacebookIcon />
+          <FaFacebookF />
         </button>
         <button onClick={debouncedTwitterLogin}>
-          {" "}
-          <TwitterIcon />
+          <FaTwitter />
         </button>
         <button onClick={debouncedGithubLogin}>
-          <GitHubIcon />
+          <FaGithub />
         </button>
       </div>
 

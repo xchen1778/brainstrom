@@ -1,0 +1,118 @@
+@import "variables";
+
+.commentsSection {
+  max-width: 36rem;
+  width: 100%;
+  margin: 4rem auto;
+
+  .commentTitle {
+    font-family: $header;
+    font-size: 1.2rem;
+  }
+
+  .commentForm {
+    background: linear-gradient(
+      45deg,
+      rgba(252, 254, 255, 1) 0%,
+      rgba(243, 248, 254, 0.5) 100%
+    );
+    border: 1px solid white;
+    box-shadow: 0 1px 12px rgb(0 0 0 / 5%);
+    border-radius: 0.8em;
+    padding: 2rem;
+    margin-top: 1.5rem;
+    margin-bottom: 4rem;
+    transition: all 300ms ease;
+
+    .commentInput {
+      display: flex;
+      gap: 1.2rem;
+
+      .commentUser {
+        height: 3rem;
+        border-radius: 50%;
+        cursor: pointer;
+      }
+
+      .commentTextArea {
+        width: 100%;
+        background-color: transparent;
+        resize: none;
+        overflow: hidden;
+        padding-right: 0.5rem;
+
+        &:focus {
+          outline: none;
+        }
+      }
+    }
+
+    .commentSubmit {
+      animation: fadeIn 300ms ease;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-left: 4rem;
+      margin-top: 2rem;
+
+      .textCount {
+        font-weight: 300;
+        font-size: 0.8rem;
+        color: #adadad;
+        visibility: hidden;
+      }
+
+      .textShowCount {
+        visibility: visible;
+      }
+
+      .textOverCount {
+        color: #ff7262;
+        font-weight: 500;
+      }
+
+      .commentButtons {
+        position: relative;
+        right: 0;
+        display: flex;
+        gap: 2rem;
+
+        .commentCancelButton {
+          color: #adadad;
+          transition: color 300ms ease;
+
+          &:hover {
+            color: #171f44;
+          }
+        }
+
+        .commentSubmitButton {
+          color: white;
+          background-color: #206bff;
+          padding: 0.5rem 2rem;
+          border-radius: 2rem;
+          transition: background-color 300ms ease;
+
+          &:hover {
+            background-color: #171f44;
+          }
+
+          &:disabled {
+            background-color: #206bff;
+            cursor: not-allowed;
+          }
+        }
+      }
+    }
+  }
+
+  .commentLine:last-of-type {
+    display: none;
+  }
+
+  .lottie {
+    width: 8rem;
+    margin: 0 auto;
+    margin-top: -3rem;
+  }
+}

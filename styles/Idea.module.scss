@@ -1,6 +1,10 @@
 @import "variables";
 
-.idea {
+.ideaOnDetails {
+  max-width: 36rem;
+  width: 100%;
+  margin: 0rem auto;
+  margin-bottom: 4rem;
   background: linear-gradient(
     45deg,
     rgba(252, 254, 255, 1) 0%,
@@ -10,22 +14,29 @@
   box-shadow: 0 1px 12px rgb(0 0 0 / 5%);
   border-radius: 0.8em;
   padding: 2rem;
+  animation: fadeIn 300ms ease;
+}
+
+.ideaOnProfile {
+  margin-bottom: 2rem;
+  background: linear-gradient(
+    45deg,
+    rgba(252, 254, 255, 1) 0%,
+    rgba(243, 248, 254, 0.5) 100%
+  );
+  border: 1px solid white;
+  box-shadow: 0 1px 12px rgb(0 0 0 / 5%);
+  border-radius: 0.8em;
+  padding: 2rem;
+  cursor: pointer;
+  animation: fadeIn 300ms ease;
+}
+
+.idea {
+  z-index: 10;
   display: flex;
   flex-direction: column;
-  gap: 0.9rem;
-  animation: fadeIn 300ms ease-out;
-  transition: all 300ms ease;
-  cursor: pointer;
-
-  &:hover {
-    background: linear-gradient(
-      45deg,
-      rgba(255, 255, 255, 1) 0%,
-      rgba(255, 255, 255, 0.5) 100%
-    );
-    transform: translateY(-5px);
-  }
-
+  gap: 1.5rem;
   .userInfo {
     display: flex;
     align-items: center;
@@ -44,27 +55,92 @@
   }
 
   .userIdea {
-    margin-top: 0.5rem;
+    word-break: break-word;
   }
 
   .ideaButtons {
     display: flex;
-    gap: 1rem;
+    justify-content: space-between;
 
-    .ideaCommentButton,
-    .ideaLikeButton {
+    .firstButtons {
       display: flex;
-      align-items: center;
-      gap: 0.35rem;
-      color: #adadad;
+      gap: 1rem;
+      .ideaCommentButton,
+      .ideaLikeButton {
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+        color: #adadad;
+      }
+
+      .fillComment {
+        color: #fec846;
+      }
+
+      .fillLike {
+        color: #ff7262;
+      }
     }
 
-    .fillComment {
-      color: #fec846;
+    .secondButtons {
+      display: flex;
+      gap: 1rem;
+
+      .editButton,
+      .deleteButton {
+        color: #adadad;
+        font-size: 1.05rem;
+        transition: color 300ms ease;
+
+        &:hover {
+          color: #171f44;
+        }
+      }
+    }
+  }
+}
+
+.deleteModal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #f6faff;
+  padding: 3rem;
+  border-radius: 1rem;
+  max-width: 30rem;
+  width: 90%;
+  z-index: 20;
+
+  .deleteTitle {
+    font-family: $header;
+    font-size: 1.5rem;
+    text-align: center;
+    line-height: 1.2em;
+  }
+  .deleteButtons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 1.5rem;
+
+    button {
+      color: white;
+      background-color: #206bff;
+      padding: 0.8rem;
+      border-radius: 2rem;
+      width: 5rem;
+      align-self: center;
+      transition: background-color 300ms ease;
+      cursor: pointer;
+
+      &:hover {
+        background-color: #1141a0;
+      }
     }
 
-    .fillLike {
-      color: #ff7262;
+    .deleteButton {
+      background-color: #adadad;
     }
   }
 }

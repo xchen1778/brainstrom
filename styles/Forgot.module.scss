@@ -9,6 +9,8 @@
   padding: 3rem;
   border-radius: 1rem;
   width: 30rem;
+  z-index: 20;
+  animation: fade 500ms ease;
 
   .forgotClose {
     font-size: 1.8rem;

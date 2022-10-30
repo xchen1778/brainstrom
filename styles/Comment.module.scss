@@ -1,0 +1,101 @@
+@import "variables";
+
+.comment {
+  position: relative;
+  margin: 2rem;
+
+  .userInfo {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+
+    .userPhoto {
+      border-radius: 50%;
+      height: 3rem;
+    }
+
+    .commentTime {
+      font-size: 0.8rem;
+      font-weight: 400;
+      color: #adadad;
+    }
+  }
+
+  .commentContent {
+    margin: 0.5rem auto;
+    margin-left: 3.6rem;
+    word-break: break-word;
+  }
+
+  .commentActions {
+    margin-left: 3.6rem;
+    margin-top: 1rem;
+    display: flex;
+    gap: 1rem;
+
+    button {
+      color: #adadad;
+      transition: color 300ms ease;
+
+      &:hover {
+        color: #171f44;
+      }
+    }
+  }
+
+  .commentLikeButton {
+    position: absolute;
+    top: 0;
+    right: 0;
+    color: #adadad;
+    font-size: 0.9rem;
+
+    .fillHeart {
+      color: #ff7262;
+    }
+  }
+
+  .deleteModal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #f6faff;
+    padding: 3rem;
+    border-radius: 1rem;
+    max-width: 30rem;
+    width: 90%;
+    z-index: 20;
+
+    .deleteTitle {
+      font-family: $header;
+      font-size: 1.5rem;
+      text-align: center;
+      line-height: 1.2em;
+    }
+    .deleteButtons {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-top: 1.5rem;
+
+      button {
+        color: white;
+        background-color: #206bff;
+        padding: 0.8rem;
+        border-radius: 2rem;
+        width: 5rem;
+        align-self: center;
+        transition: background-color 300ms ease;
+        cursor: pointer;
+
+        &:hover {
+          background-color: #1141a0;
+        }
+      }
+      .deleteButton {
+        background-color: #adadad;
+      }
+    }
+  }
+}

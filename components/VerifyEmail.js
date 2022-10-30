@@ -4,11 +4,12 @@ import { signInWithEmailLink } from "firebase/auth";
 import { errorModal } from "../functions/errorModal";
 import { useDispatch } from "react-redux";
 import { setVerifyEmail } from "../store/verifyEmail-slice";
+import { setLoadingPage } from "../store/loadingPage-slice";
 import { useRouter } from "next/router";
 import styles from "../styles/Verifyemail.module.scss";
 import { IoCloseCircle } from "react-icons/io5";
 
-function VerifyEmail() {
+function VerifyEmail({ isHomePage }) {
   const dispatch = useDispatch();
   const route = useRouter();
   const [emailForVerify, setEmailForVerify] = useState("");
@@ -18,7 +19,10 @@ function VerifyEmail() {
     try {
       await signInWithEmailLink(auth, emailForVerify, window.location.href);
       window.localStorage.removeItem("emailForSignIn");
-      route.push("/dashboard");
+      isHomePage && dispatch(setLoadingPage(true));
+      dispatch(setVerifyEmail(false));
+      window.localStorage.setItem("userId", user.uid);
+      isHomePage && route.push("/dashboard");
     } catch (error) {
       switch (error.code) {
         case "auth/missing-email":

@@ -9,6 +9,8 @@
   padding: 3rem;
   border-radius: 1rem;
   width: 30rem;
+  z-index: 20;
+  animation: fade 500ms ease;
 
   .signinClose {
     font-size: 1.8rem;
@@ -40,6 +42,10 @@
       width: 18rem;
 
       button {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 1.3rem;
         background-color: #206bff;
         color: white;
         border-radius: 2em;
@@ -136,6 +142,7 @@
           align-self: center;
           transition: background-color 300ms ease;
           cursor: pointer;
+          font-size: 1rem;
 
           &:hover {
             background-color: #1141a0;
@@ -160,6 +167,7 @@
           align-self: center;
           transition: background-color 300ms ease;
           cursor: pointer;
+          font-size: 1rem;
 
           &:hover {
             color: white;

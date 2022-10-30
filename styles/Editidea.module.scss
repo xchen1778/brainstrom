@@ -1,0 +1,54 @@
+.editForm {
+  .editArea {
+    width: 100%;
+    background-color: transparent;
+    margin: 1.5rem 0;
+    resize: none;
+    overflow: hidden;
+    padding-right: 0.5rem;
+
+    &:focus {
+      outline: none;
+    }
+  }
+  .editAction {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    .editTextCount {
+      font-weight: 300;
+      font-size: 0.8rem;
+      color: #adadad;
+    }
+
+    .editButtons {
+      display: flex;
+      gap: 2rem;
+      .editIdeaCancelButton {
+        color: #adadad;
+        transition: color 300ms ease;
+
+        &:hover {
+          color: #171f44;
+        }
+      }
+
+      .editIdeaDoneButton {
+        color: white;
+        background-color: #206bff;
+        padding: 0.5rem 2rem;
+        border-radius: 2rem;
+        transition: background-color 300ms ease;
+
+        &:hover {
+          background-color: #171f44;
+        }
+
+        &:disabled {
+          background-color: #206bff;
+          cursor: not-allowed;
+        }
+      }
+    }
+  }
+}

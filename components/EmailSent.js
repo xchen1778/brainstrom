@@ -26,7 +26,7 @@ function EmailSent({ setEmailLinkSent }) {
           }, 1000);
         }}
       >
-        Back to home
+        Done
       </button>
     </div>
   );

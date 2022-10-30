@@ -1,7 +1,11 @@
+import loader from "../public/loader.json";
+import Lottie from "lottie-react";
+import styles from "../styles/Loading.module.scss";
+
 function Loading() {
   return (
-    <div className="z-10 w-screen h-screen bg-slate-400 fixed top-0 left-0">
-      Loading
+    <div className={styles.loadingPage}>
+      <Lottie animationData={loader} className={styles.loadingIcon} />
     </div>
   );
 }

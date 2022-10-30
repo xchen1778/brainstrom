@@ -15,14 +15,21 @@ import {
   arrayRemove,
   getDoc,
 } from "firebase/firestore";
-import Comments from "./Comments";
 import styles from "../styles/Idea.module.scss";
 import {
   FaRegCommentAlt,
   FaCommentAlt,
   FaRegHeart,
   FaHeart,
+  FaRegEdit,
 } from "react-icons/fa";
+import { useRouter } from "next/router";
+import Link from "next/link";
+import { RiDeleteBinLine } from "react-icons/ri";
+import Blackscreen from "./Blackscreen";
+import { animated, useTransition } from "react-spring";
+import { useDispatch } from "react-redux";
+import { setLoadingPage } from "../store/loadingPage-slice";
 
 function Idea({
   id,
@@ -32,16 +39,29 @@ function Idea({
   timestamp,
   edited,
   userId,
-  likes,
   numOfLikes,
+  ideaPage,
+  isAuthor,
+  profilePage,
 }) {
   const [editOn, setEditOn] = useState(false);
   const [deleteOn, setDeleteOn] = useState(false);
-  const [expandIdea, setExpandIdea] = useState(true);
   const [fillComment, setFillComment] = useState(false);
   const [fillLike, setFillLike] = useState(false);
   const [alreadyLiked, setAlreadyLiked] = useState(false);
   const [allComments, setAllComments] = useState([]);
+  const route = useRouter();
+  const dispatch = useDispatch();
+  const transitionDelete = useTransition(deleteOn, {
+    from: { opacity: 0 },
+    enter: { opacity: 1 },
+    leave: { opacity: 0 },
+  });
+
+  useEffect(() => {
+    getAllComments();
+    liked();
+  }, []);
 
   async function getAllComments() {
     const commentsRef = collection(db, "comments");
@@ -58,11 +78,6 @@ function Idea({
     return unsubscribe;
   }
 
-  useEffect(() => {
-    getAllComments();
-    liked();
-  }, []);
-
   async function handleDelete(id) {
     try {
       const ideaRef = doc(db, "ideas", id);
@@ -75,6 +90,8 @@ function Idea({
         await deleteDoc(commentRef);
       });
       setDeleteOn(false);
+      route.push("/dashboard");
+      dispatch(setLoadingPage(true));
     } catch (error) {
       console.log(error);
     }
@@ -82,31 +99,28 @@ function Idea({
 
   async function handleLikes() {
     try {
-      const ideaRef = doc(db, "ideas", id);
-      const ideaSnap = await getDoc(ideaRef);
-      const alreadyLiked = ideaSnap
-        .data()
-        .likes.some(
-          (like) => like.userId === window.localStorage.getItem("userId")
-        );
-      if (alreadyLiked) {
-        await updateDoc(ideaRef, {
-          likes: arrayRemove({
-            like: 1,
-            userId: window.localStorage.getItem("userId"),
-          }),
-          numOfLikes: numOfLikes - 1,
-        });
-        setAlreadyLiked(false);
+      if (window.localStorage.getItem("userId")) {
+        const ideaRef = doc(db, "ideas", id);
+        const ideaSnap = await getDoc(ideaRef);
+        const alreadyLiked = ideaSnap
+          .data()
+          .likes.some((like) => like === window.localStorage.getItem("userId"));
+        if (alreadyLiked) {
+          await updateDoc(ideaRef, {
+            likes: arrayRemove(window.localStorage.getItem("userId")),
+            numOfLikes: parseInt(numOfLikes) - 1,
+          });
+          setAlreadyLiked(false);
+        } else {
+          await updateDoc(ideaRef, {
+            likes: arrayUnion(window.localStorage.getItem("userId")),
+            numOfLikes: parseInt(numOfLikes) + 1,
+          });
+          setAlreadyLiked(true);
+        }
       } else {
-        await updateDoc(ideaRef, {
-          likes: arrayUnion({
-            like: 1,
-            userId: window.localStorage.getItem("userId"),
-          }),
-          numOfLikes: numOfLikes + 1,
-        });
-        setAlreadyLiked(true);
+        route.push("/");
+        dispatch(setLoadingPage(true));
       }
     } catch (error) {
       console.log(error);
@@ -124,102 +138,139 @@ function Idea({
     const ideaSnap = await getDoc(ideaRef);
     const liked = ideaSnap
       .data()
-      .likes.some(
-        (like) => like.userId === window.localStorage.getItem("userId")
-      );
+      .likes.some((like) => like === window.localStorage.getItem("userId"));
     setAlreadyLiked(liked);
   }
 
   return (
-    <div className={styles.idea}>
-      <div className={styles.userInfo}>
-        <img className={styles.userPhoto} src={photoURL} />
-        <div>
-          <h3 className={styles.userName}>{displayName}</h3>
-          <p className={styles.postTime}>
-            <span>
-              {(timestamp
-                ? new Date(timestamp.seconds * 1000)
-                : new Date()
-              ).toLocaleDateString("en-US")}
-            </span>
-            {"  "}
-            <span>
-              {(timestamp
-                ? new Date(timestamp.seconds * 1000)
-                : new Date()
-              ).toLocaleTimeString([], {
-                hour: "2-digit",
-                minute: "2-digit",
-              })}
-            </span>
-            {"  "}
-            {edited && <span>edited</span>}
-          </p>
-        </div>
-      </div>
-      <div className={styles.userIdea}>
-        <p>{idea}</p>
-      </div>
-      <div className={styles.ideaButtons}>
-        <button
-          onClick={() => setExpandIdea(true)}
-          className={styles.ideaCommentButton}
-          onMouseEnter={() => setFillComment(true)}
-          onMouseLeave={() => setFillComment(false)}
+    <div
+      className={`${ideaPage ? styles.ideaOnDetails : ""} ${
+        profilePage ? styles.ideaOnProfile : ""
+      }`}
+      onClick={() => {
+        if (!ideaPage) {
+          dispatch(setLoadingPage(true));
+        }
+      }}
+    >
+      <Link
+        href={!ideaPage ? { pathname: `/dashboard/${id}`, query: id } : "#"}
+      >
+        <div
+          className={styles.idea}
+          onClick={(e) => {
+            if (ideaPage) {
+              e.preventDefault();
+            }
+          }}
         >
-          {fillComment || commented() ? (
-            <FaCommentAlt className={styles.fillComment} />
-          ) : (
-            <FaRegCommentAlt />
-          )}
-          {`${allComments.length}`}
-        </button>
-        <button
-          className={styles.ideaLikeButton}
-          onClick={handleLikes}
-          onMouseEnter={() => setFillLike(true)}
-          onMouseLeave={() => setFillLike(false)}
-        >
-          {fillLike || alreadyLiked ? (
-            <FaHeart className={styles.fillLike} />
-          ) : (
-            <FaRegHeart />
-          )}
-          {likes.length}
-        </button>
-      </div>
-      {/* {expandIdea && <Comments id={id} allComments={allComments} />} */}
-    </div>
-  );
-}
-
-{
-  /* {editOn ? (
-        <EditIdea idea={idea} id={id} setEditOn={setEditOn} />
-      ) : (
-        <>
-          {userId === window.localStorage.getItem("userId") && expandIdea && (
-            <div className="profile-page">
-              <button onClick={() => setDeleteOn(true)}>Delete</button>
-              <button onClick={() => setEditOn(true)}>Edit</button>
-            </div>
-          )}
-
-          {expandIdea && <Comments id={id} allComments={allComments} />}
-
-          {deleteOn && (
+          <div className={styles.userInfo}>
+            <img className={styles.userPhoto} src={photoURL} />
             <div>
-              <h1>Do you want to delete this?</h1>
-              <button onClick={() => handleDelete(id)}>Yes</button>
+              <h3 className={styles.userName}>{displayName}</h3>
+              <p className={styles.postTime}>
+                <span>
+                  {(timestamp
+                    ? new Date(timestamp.seconds * 1000)
+                    : new Date()
+                  ).toLocaleDateString("en-US")}
+                </span>
+                {"  "}
+                <span>
+                  {(timestamp
+                    ? new Date(timestamp.seconds * 1000)
+                    : new Date()
+                  ).toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                </span>
+                {"  "}
+                {edited && <span>edited</span>}
+              </p>
+            </div>
+          </div>
+          {!editOn && (
+            <>
+              <div className={styles.userIdea}>
+                <p>{idea}</p>
+              </div>
+              <div className={styles.ideaButtons}>
+                <div className={styles.firstButtons}>
+                  <button
+                    className={styles.ideaCommentButton}
+                    onMouseEnter={() => setFillComment(true)}
+                    onMouseLeave={() => setFillComment(false)}
+                  >
+                    {fillComment || commented() ? (
+                      <FaCommentAlt className={styles.fillComment} />
+                    ) : (
+                      <FaRegCommentAlt />
+                    )}
+                    {`${allComments.length}`}
+                  </button>
+                  <button
+                    className={styles.ideaLikeButton}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleLikes();
+                    }}
+                    onMouseEnter={() => setFillLike(true)}
+                    onMouseLeave={() => setFillLike(false)}
+                  >
+                    {fillLike || alreadyLiked ? (
+                      <FaHeart className={styles.fillLike} />
+                    ) : (
+                      <FaRegHeart />
+                    )}
+                    {numOfLikes}
+                  </button>
+                </div>
+                {isAuthor && ideaPage && (
+                  <div className={styles.secondButtons}>
+                    <button
+                      onClick={() => setEditOn(true)}
+                      className={styles.editButton}
+                    >
+                      <FaRegEdit />
+                    </button>
+                    <button
+                      onClick={() => setDeleteOn(true)}
+                      className={styles.deleteButton}
+                    >
+                      <RiDeleteBinLine />
+                    </button>
+                  </div>
+                )}
+              </div>
+            </>
+          )}
+        </div>
+      </Link>
+
+      {deleteOn && (
+        <>
+          <Blackscreen />
+          <div className={styles.deleteModal}>
+            <h4 className={styles.deleteTitle}>
+              Do you want to delete this idea?
+            </h4>
+            <div className={styles.deleteButtons}>
+              <button
+                className={styles.deleteButton}
+                onClick={() => handleDelete(id)}
+              >
+                Yes
+              </button>
               <button onClick={() => setDeleteOn(false)}>No</button>
             </div>
-          )}
+          </div>
         </>
       )}
+
+      {editOn && <EditIdea idea={idea} id={id} setEditOn={setEditOn} />}
     </div>
   );
-} */
 }
 
 export default memo(Idea);

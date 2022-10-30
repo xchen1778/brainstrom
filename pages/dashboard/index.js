@@ -1,9 +1,11 @@
 import { useEffect, useState, memo } from "react";
-import Nav from "../components/Nav";
-import { db, auth } from "../utils/firebase";
+import Nav from "../../components/Nav";
+import { db, auth } from "../../utils/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { useDispatch } from "react-redux";
-import { setDropdown } from "../store/dropdown-slice";
+import { useSelector, useDispatch } from "react-redux";
+import { setDropdown } from "../../store/dropdown-slice";
+import { setLoadingPage } from "../../store/loadingPage-slice";
+import { setScrollUp } from "../../store/scrollUp-slice";
 import {
   addDoc,
   collection,
@@ -14,20 +16,24 @@ import {
   limit,
   startAfter,
 } from "firebase/firestore";
-import { errorModal } from "../functions/errorModal";
+import { errorModal } from "../../functions/errorModal";
 import { ToastContainer, Slide } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import Idea from "../components/Idea";
-import { debounce } from "../functions/debounce";
-import styles from "../styles/Dashboard.module.scss";
+import Idea from "../../components/Idea";
+import { debounce } from "../../functions/debounce";
+import styles from "../../styles/Dashboard.module.scss";
 import Masonry from "react-masonry-css";
-import loader from "../public/loader.json";
+import loader from "../../public/loader.json";
 import Lottie from "lottie-react";
 import { useRouter } from "next/router";
+import Loading from "../../components/Loading";
+import ScrollUp from "../../components/ScrollUp";
 
 function Dashboard() {
   const [user, loading] = useAuthState(auth);
+  const loadingPage = useSelector((store) => store.loadingPage);
   const dispatch = useDispatch();
+  const scrollUp = useSelector((store) => store.scrollUp);
   const [idea, setIdea] = useState("");
   const [allIdeas, setAllIdeas] = useState([]);
   const [allDisplayIdeas, setAllDisplayIdeas] = useState([]);
@@ -113,26 +119,38 @@ function Dashboard() {
   }, [user, loading]);
 
   useEffect(() => {
+    dispatch(setLoadingPage(false));
+    dispatch(setScrollUp(false));
     getFirstIdeas();
     document.addEventListener("click", () => {
       dispatch(setDropdown(false));
     });
+    document.addEventListener("scroll", () => {
+      if (window.pageYOffset > 400) {
+        dispatch(setScrollUp(true));
+      } else {
+        dispatch(setScrollUp(false));
+      }
+    });
+    dispatch(setDropdown(false));
   }, []);
 
   useEffect(() => {
     document.addEventListener("scroll", handleScroll);
+    const scrollUpButton = document.querySelector("#scrollUp");
+    scrollUpButton && (scrollUpButton.style.zIndex = 10);
   }, [latestDoc]);
 
   async function getFirstIdeas() {
     const ideasRef = collection(db, "ideas");
     const q = query(ideasRef, orderBy("timestamp", "desc"), limit(10));
-    const allLoadedIdeas = [];
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
-      allLoadedIdeas = querySnapshot.docs.map((doc) => ({
-        ...doc.data(),
-        id: doc.id,
-      }));
-      setAllIdeas(allLoadedIdeas);
+      setAllIdeas(
+        querySnapshot.docs.map((doc) => ({
+          ...doc.data(),
+          id: doc.id,
+        }))
+      );
       setLatestDoc(querySnapshot.docs[querySnapshot.docs.length - 1]);
     });
     return unsubscribe;
@@ -223,7 +241,7 @@ function Dashboard() {
         <div className={styles.postIdeaInput}>
           <img
             className={styles.postUser}
-            src={user?.photoURL}
+            src="https://i.ibb.co/dbBcVSW/profile-picture.png"
             onClick={() => {
               route.push("/profile");
             }}
@@ -286,7 +304,7 @@ function Dashboard() {
       }}
       className={styles.dashboard}
     >
-      <Nav />
+      <Nav isDashboard={true} />
       <main>
         {user && postIdeaForm}
         <div className={styles.latestIdeas} id="latestIdeas">
@@ -296,9 +314,13 @@ function Dashboard() {
             className="my-masonry-grid"
             columnClassName="my-masonry-grid_column"
           >
-            {allDisplayIdeas.map((idea) => (
-              <div key={idea.id}>
-                <Idea {...idea} allIdeas={allIdeas} />
+            {allDisplayIdeas?.map((idea) => (
+              <div
+                className={styles.idea}
+                onClick={() => dispatch(setLoadingPage(true))}
+                key={idea.id}
+              >
+                <Idea {...idea} ideaPage={false} />
               </div>
             ))}
           </Masonry>
@@ -307,6 +329,12 @@ function Dashboard() {
           )}
         </div>
       </main>
+      {loadingPage && <Loading />}
+      {scrollUp && (
+        <div id="scrollUp">
+          <ScrollUp />
+        </div>
+      )}
       <ToastContainer
         position="top-center"
         autoClose={2000}

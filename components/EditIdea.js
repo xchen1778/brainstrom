@@ -1,15 +1,22 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { db } from "../utils/firebase";
 import { doc, updateDoc, serverTimestamp } from "firebase/firestore";
 import { errorModal } from "../functions/errorModal";
-import { ToastContainer, Slide } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import styles from "../styles/Editidea.module.scss";
 
 function EditIdea({ id, idea, setEditOn }) {
   const [editIdea, setEditIdea] = useState(idea);
 
+  useEffect(() => {
+    const editIdeaTextArea = document.querySelector("#editIdeaTextArea");
+    const end = editIdeaTextArea.value.length;
+    editIdeaTextArea.setSelectionRange(end, end);
+    editIdeaTextArea.focus();
+  }, []);
+
   async function handleEdit(id) {
     try {
+      console.log("run");
       if (editIdea === idea || editIdea.length === 0 || editIdea.length > 300) {
         errorModal("Invalid post. Please check again.");
         return;
@@ -35,45 +42,47 @@ function EditIdea({ id, idea, setEditOn }) {
   }
 
   return (
-    <>
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          handleEdit(id);
+    <form className={styles.editForm}>
+      <textarea
+        value={editIdea}
+        onChange={(e) => {
+          setEditIdea(e.target.value);
+          e.target.style.height = "inherit";
+          e.target.style.height = `${e.target.scrollHeight}px`;
         }}
-      >
-        <textarea
-          value={editIdea}
-          onChange={(e) => {
-            setEditIdea(e.target.value);
-          }}
-          onKeyDown={handleEnterPress}
-        ></textarea>
-        <p>{editIdea.length}/300</p>
-        <button
-          disabled={
-            editIdea === idea || editIdea.length === 0 || editIdea.length > 300
-          }
-        >
-          Done
-        </button>
-      </form>
-
-      <ToastContainer
-        position="top-center"
-        autoClose={1500}
-        limit={5}
-        hideProgressBar
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="colored"
-        transition={Slide}
-      />
-    </>
+        onKeyDown={handleEnterPress}
+        className={styles.editArea}
+        id="editIdeaTextArea"
+        autofocus
+      ></textarea>
+      <div className={styles.editAction}>
+        <p className={styles.editTextCount}>{editIdea.length}/300</p>
+        <div className={styles.editButtons}>
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              document.querySelector("#editIdeaTextArea").style.height =
+                "inherit";
+              setEditIdea(idea);
+              setEditOn(false);
+            }}
+            className={styles.editIdeaCancelButton}
+          >
+            Cancel
+          </button>
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              handleEdit(id);
+            }}
+            disabled={editIdea.length === 0 || editIdea.length > 300}
+            className={styles.editIdeaDoneButton}
+          >
+            Done
+          </button>
+        </div>
+      </div>
+    </form>
   );
 }
 

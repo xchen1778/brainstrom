@@ -1,12 +1,19 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { db } from "../utils/firebase";
 import { doc, updateDoc, serverTimestamp } from "firebase/firestore";
 import { errorModal } from "../functions/errorModal";
-import { ToastContainer, Slide } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { debounce } from "../functions/debounce";
+import styles from "../styles/Editcomment.module.scss";
 
 function EditComment({ id, comment, setEditOn }) {
   const [editComment, setEditComment] = useState(comment);
+
+  useEffect(() => {
+    const editCommentTextArea = document.querySelector("#editCommentTextArea");
+    const end = editCommentTextArea.value.length;
+    editCommentTextArea.setSelectionRange(end, end);
+    editCommentTextArea.focus();
+  }, []);
 
   async function handleEdit(id) {
     try {
@@ -30,49 +37,67 @@ function EditComment({ id, comment, setEditOn }) {
       console.log(error);
     }
   }
+  const debouncedHandleEdit = debounce(handleEdit, 300);
+
+  function handleEnterPress(e) {
+    if (e.keyCode === 13 && !e.shift && !e.altKey && !e.ctrlKey && !e.metaKey) {
+      e.preventDefault();
+      debouncedHandleEdit(id);
+    }
+  }
 
   return (
-    <>
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          handleEdit(id);
+    <form className={styles.editForm}>
+      <textarea
+        type="text"
+        value={editComment}
+        onChange={(e) => {
+          setEditComment(e.target.value);
+          e.target.style.height = "inherit";
+          e.target.style.height = `${e.target.scrollHeight}px`;
         }}
-      >
-        <input
-          type="text"
-          value={editComment}
-          onChange={(e) => {
-            setEditComment(e.target.value);
-          }}
-        />
-        <p>{editComment.length}/300</p>
-        <button
-          disabled={
-            editComment === comment ||
-            editComment.length === 0 ||
-            editComment.length > 300
-          }
-        >
-          Done
-        </button>
-      </form>
+        className={styles.editTextArea}
+        id="editCommentTextArea"
+        onKeyDown={handleEnterPress}
+      ></textarea>
 
-      <ToastContainer
-        position="top-center"
-        autoClose={1500}
-        limit={5}
-        hideProgressBar
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="colored"
-        transition={Slide}
-      />
-    </>
+      <div className={styles.editCommentSubmit}>
+        <p
+          className={`${styles.textCount} ${
+            editComment.length ? styles.textShowCount : ""
+          } ${editComment.length > 300 ? styles.textOverCount : ""} `}
+        >
+          {editComment.length}/300
+        </p>
+        <div className={styles.editCommentButtons}>
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              document.querySelector("#editCommentTextArea").style.height =
+                "inherit";
+              setEditOn(false);
+            }}
+            className={styles.editCommentCancelButton}
+          >
+            Cancel
+          </button>
+          <button
+            disabled={
+              editComment === comment ||
+              editComment.length === 0 ||
+              editComment.length > 300
+            }
+            onClick={(e) => {
+              e.preventDefault();
+              debouncedHandleEdit(id);
+            }}
+            className={styles.editCommentSubmitButton}
+          >
+            Done
+          </button>
+        </div>
+      </div>
+    </form>
   );
 }
 

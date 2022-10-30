@@ -1,0 +1,16 @@
+@import "variables";
+
+.scrollUp {
+  position: fixed;
+  right: 3rem;
+  bottom: 2rem;
+  font-size: 2rem;
+  color: white;
+  background-color: #206bff;
+  padding: 0.8rem;
+  border-radius: 5em;
+  box-shadow: 0 1px 12px rgb(0 0 0 / 5%);
+  cursor: pointer;
+  animation: fadeIn 300ms ease;
+  z-index: 10 !important;
+}

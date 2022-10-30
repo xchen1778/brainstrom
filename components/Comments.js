@@ -1,19 +1,61 @@
 import { useEffect, useState } from "react";
 import { db, auth } from "../utils/firebase";
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import {
+  collection,
+  onSnapshot,
+  query,
+  orderBy,
+  where,
+  addDoc,
+  serverTimestamp,
+} from "firebase/firestore";
 import { useAuthState } from "react-firebase-hooks/auth";
 import Comment from "./Comment";
-import { debounce } from "../functions/debounce";
 import { errorModal } from "../functions/errorModal";
-import { ToastContainer, Slide } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import styles from "../styles/Comments.module.scss";
+import { useRouter } from "next/router";
+import { useDispatch } from "react-redux";
+import { setLoadingPage } from "../store/loadingPage-slice";
+import Lottie from "lottie-react";
+import loader from "../public/loader.json";
+import { debounce } from "../functions/debounce";
 
-function Comments({ id, allComments }) {
+function Comments({ id }) {
   const [message, setMessage] = useState("");
-  const [user, loading, error] = useAuthState(auth);
-  const [sortedAllComments, setSortedAllComments] = useState(
-    sortComments(allComments)
-  );
+  const [user, loading] = useAuthState(auth);
+  const [allComments, setAllComments] = useState([]);
+  const [sortedAllComments, setSortedAllComments] = useState([]);
+  const [showSubmit, setShowSubmit] = useState(false);
+  const [posting, setPosting] = useState(false);
+  const [endComments, setEndComments] = useState(false);
+  const [amountCommentsShown, setAmountCommentsShown] = useState(10);
+  const [loadingIcon, setLoadingIcon] = useState(false);
+  const route = useRouter();
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    getComments();
+    document.addEventListener("scroll", handleScroll);
+  }, []);
+
+  useEffect(() => {
+    if (amountCommentsShown > allComments.length) {
+      setEndComments(true);
+    }
+  }, [amountCommentsShown]);
+
+  function handleScroll() {
+    if (
+      window.innerHeight + window.scrollY >= document.body.offsetHeight &&
+      endComments === false
+    ) {
+      setLoadingIcon(true);
+      setTimeout(() => {
+        setAmountCommentsShown((amount) => amount + 10);
+        setLoadingIcon(false);
+      }, 1000);
+    }
+  }
 
   function sortComments(comments) {
     return comments.sort((a, b) => b.numOfLikes - a.numOfLikes);
@@ -25,6 +67,10 @@ function Comments({ id, allComments }) {
 
   function isSameLikedComment(a, b) {
     return a.id === b.id && a.numOfLikes === b.numOfLikes;
+  }
+
+  function isSameCommentContent(a, b) {
+    return a.id === b.id && a.comment === b.comment;
   }
 
   function getDifference(a, b, compareFunction) {
@@ -50,8 +96,20 @@ function Comments({ id, allComments }) {
       isSameLikedComment
     );
 
+    const updateDifference = getDifference(
+      allComments,
+      sortedAllComments,
+      isSameCommentContent
+    );
+
     additionalDifference.map((differentComment) => {
-      const newComments = sortedAllComments.unshift(differentComment);
+      let newComments;
+      if (posting) {
+        newComments = sortedAllComments.unshift(differentComment);
+      } else {
+        newComments = sortedAllComments.push(differentComment);
+      }
+      setPosting(false);
       setSortedAllComments(newComments);
     });
 
@@ -68,7 +126,19 @@ function Comments({ id, allComments }) {
           ? {
               ...comment,
               likes: [...differentComment.likes],
-              numOfLikes: differentComment.numOfLikes,
+              numOfLikes: parseInt(differentComment.numOfLikes),
+            }
+          : comment
+      );
+      setSortedAllComments(newComments);
+    });
+
+    updateDifference.map((differentComment) => {
+      const newComments = sortedAllComments.map((comment) =>
+        comment.id === differentComment.id
+          ? {
+              ...comment,
+              comment: differentComment.comment,
             }
           : comment
       );
@@ -76,12 +146,33 @@ function Comments({ id, allComments }) {
     });
   }, [allComments]);
 
+  async function getComments() {
+    const commentsRef = collection(db, "comments");
+    const q = query(
+      commentsRef,
+      orderBy("timestamp", "desc"),
+      where("ideaId", "==", id)
+    );
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      setAllComments(
+        sortComments(
+          querySnapshot.docs.map((doc) => ({
+            ...doc.data(),
+            id: doc.id,
+          }))
+        )
+      );
+    });
+    return unsubscribe;
+  }
+
   async function handleAddComment(id) {
     try {
       if (message.length === 0 || message.length > 300) {
         errorModal("Invalid post. Please check again.");
         return;
       } else {
+        setPosting(true);
         const commentsRef = collection(db, "comments");
         await addDoc(commentsRef, {
           comment: message,
@@ -95,6 +186,7 @@ function Comments({ id, allComments }) {
           numOfLikes: 0,
         });
         setMessage("");
+        setShowSubmit(false);
       }
     } catch (error) {
       console.log(error);
@@ -103,45 +195,92 @@ function Comments({ id, allComments }) {
 
   const debouncedHandleAddComment = debounce(handleAddComment, 300);
 
+  function handleEnterPress(e) {
+    if (e.keyCode === 13 && !e.shift && !e.altKey && !e.ctrlKey && !e.metaKey) {
+      e.preventDefault();
+      debouncedHandleAddComment(id);
+    }
+  }
+
   return (
-    <div>
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          debouncedHandleAddComment(id);
-        }}
-      >
-        <input
-          type="text"
-          placeholder="tell me what you think"
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-        />
-        <p>{message.length}/300</p>
-        <button
-          type="submit"
-          disabled={message.length === 0 || message.length > 300}
-        >
-          Submit
-        </button>
-      </form>
-      {sortedAllComments.map((comment) => (
-        <Comment key={comment.id} id={comment.id} {...comment} />
+    <div className={styles.commentsSection}>
+      <h2
+        className={styles.commentTitle}
+      >{`All comments (${allComments.length})`}</h2>
+      {user && (
+        <form className={styles.commentForm}>
+          <div className={styles.commentInput}>
+            <img
+              className={styles.commentUser}
+              src={user?.photoURL}
+              onClick={() => {
+                route.push("/profile");
+                dispatch(setLoadingPage(true));
+              }}
+            />
+            <textarea
+              type="text"
+              placeholder="Add a comment..."
+              value={message}
+              onChange={(e) => {
+                setMessage(e.target.value);
+                e.target.style.height = "inherit";
+                e.target.style.height = `${e.target.scrollHeight}px`;
+                if (!e.target.value) {
+                  setShowSubmit(false);
+                }
+              }}
+              onFocus={() => {
+                setShowSubmit(true);
+              }}
+              className={styles.commentTextArea}
+              onKeyDown={handleEnterPress}
+            />
+          </div>
+          {showSubmit && (
+            <div className={styles.commentSubmit}>
+              <p
+                className={`${styles.textCount} ${
+                  message.length ? styles.textShowCount : ""
+                } ${message.length > 300 ? styles.textOverCount : ""} `}
+              >
+                {message.length}/300
+              </p>
+              <div className={styles.commentButtons}>
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setMessage("");
+                    setShowSubmit(false);
+                  }}
+                  className={styles.commentCancelButton}
+                >
+                  Cancel
+                </button>
+                <button
+                  disabled={message.length === 0 || message.length > 300}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    debouncedHandleAddComment(id);
+                  }}
+                  className={styles.commentSubmitButton}
+                >
+                  Submit
+                </button>
+              </div>
+            </div>
+          )}
+        </form>
+      )}
+      {sortedAllComments.slice(0, amountCommentsShown).map((comment) => (
+        <div key={comment.id}>
+          <Comment id={comment.id} {...comment} />
+          <hr className={styles.commentLine} />
+        </div>
       ))}
-      <ToastContainer
-        position="top-center"
-        autoClose={1500}
-        limit={5}
-        hideProgressBar
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="colored"
-        transition={Slide}
-      />
+      {loadingIcon && amountCommentsShown < allComments.length && (
+        <Lottie animationData={loader} className={styles.lottie} />
+      )}
     </div>
   );
 }

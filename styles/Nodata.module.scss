@@ -1,0 +1,50 @@
+@import "variables";
+
+.noData {
+  width: 100%;
+  margin: 0rem auto;
+  background: linear-gradient(
+    45deg,
+    rgba(252, 254, 255, 1) 0%,
+    rgba(243, 248, 254, 0.5) 100%
+  );
+  border: 1px solid white;
+  box-shadow: 0 1px 12px rgb(0 0 0 / 5%);
+  border-radius: 0.8em;
+  padding: 3.5rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 1.7rem;
+  animation: fadeIn 300ms ease;
+
+  .noDataMessage {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+
+    .noDataTitle {
+      font-family: $header;
+      font-size: 1.6rem;
+    }
+
+    .noDataText {
+      font-size: 0.9rem;
+      color: #adadad;
+    }
+  }
+
+  .noDataButton {
+    color: white;
+    background-color: #206bff;
+    padding: 0.6rem 2rem;
+    border-radius: 2rem;
+    align-self: center;
+    transition: background-color 300ms ease;
+    cursor: pointer;
+
+    &:hover {
+      background-color: #1141a0;
+    }
+  }
+}

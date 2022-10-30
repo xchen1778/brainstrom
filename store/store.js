@@ -6,6 +6,8 @@ import forgotModal from "./forgotModal-slice";
 import resetModal from "./resetModal-slice";
 import email from "./email-slice";
 import verifyEmail from "./verifyEmail-slice";
+import loadingPage from "./loadingPage-slice";
+import scrollUp from "./scrollUp-slice";
 
 export const store = configureStore({
   reducer: {
@@ -16,5 +18,7 @@ export const store = configureStore({
     resetModal,
     email,
     verifyEmail,
+    loadingPage,
+    scrollUp,
   },
 });

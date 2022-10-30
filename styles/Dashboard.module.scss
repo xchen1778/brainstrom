@@ -98,7 +98,6 @@
 
           &:disabled {
             background-color: #206bff;
-            cursor: not-allowed;
           }
         }
       }
@@ -115,6 +114,30 @@
       font-family: $header;
       text-align: center;
       margin-bottom: 3rem;
+    }
+
+    .idea {
+      background: linear-gradient(
+        45deg,
+        rgba(252, 254, 255, 1) 0%,
+        rgba(243, 248, 254, 0.5) 100%
+      );
+      border: 1px solid white;
+      box-shadow: 0 1px 12px rgb(0 0 0 / 5%);
+      border-radius: 0.8em;
+      padding: 2rem;
+      animation: fadeIn 300ms ease-out;
+      transition: all 300ms ease;
+      cursor: pointer;
+
+      &:hover {
+        background: linear-gradient(
+          45deg,
+          rgba(255, 255, 255, 1) 0%,
+          rgba(255, 255, 255, 0.5) 100%
+        );
+        transform: translateY(-5px);
+      }
     }
 
     .lottie {

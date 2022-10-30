@@ -2,6 +2,8 @@ import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { setSignupModal } from "../store/signupModal-slice";
 import { setSigninModal } from "../store/signinModal-slice";
+import { setForgotModal } from "../store/forgotModal-slice";
+import { setLoadingPage } from "../store/loadingPage-slice";
 import { auth } from "../utils/firebase";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { debounce } from "../functions/debounce";
@@ -9,14 +11,22 @@ import { errorModal } from "../functions/errorModal";
 import { useRouter } from "next/router";
 import styles from "../styles/Signup.module.scss";
 import { IoCloseCircle } from "react-icons/io5";
-import Blackscreen from "./Blackscreen";
+import { useAuthState } from "react-firebase-hooks/auth";
 
-function SignUp() {
+function SignUp({ isHomePage }) {
   const [registerName, setRegisterName] = useState("");
   const [registerEmail, setRegisterEmail] = useState("");
   const [registerPassword, setRegisterPassword] = useState("");
   const dispatch = useDispatch();
   const route = useRouter();
+  const [user, loading] = useAuthState(auth);
+
+  function closeAllModals() {
+    dispatch(setSigninModal(false));
+    dispatch(setSignupModal(false));
+    dispatch(setForgotModal(false));
+    window.localStorage.setItem("userId", user.uid);
+  }
 
   async function register() {
     try {
@@ -30,13 +40,11 @@ function SignUp() {
         );
         await updateProfile(auth.currentUser, {
           displayName: registerName,
-          photoURL:
-            "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ0xaQ0N_9FbazbTufFB8hDIUkH6cQYqz8IrQ&usqp=CAU",
+          photoURL: "https://i.ibb.co/dbBcVSW/profile-picture.png",
         });
-        route.push("/dashboard");
+        closeAllModals();
       }
     } catch (error) {
-      console.log(error.code);
       switch (error.code) {
         case "auth/email-already-exists":
           errorModal("There is already an account with this email address.");

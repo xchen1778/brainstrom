@@ -23,13 +23,17 @@
       color: #206bff;
     }
   }
+
+  .profileButton {
+    color: #1141a0;
+    &:hover {
+      color: #1141a0;
+    }
+  }
 }
 
 @include mobile() {
   .dropdown {
-    position: relative;
-    left: auto;
-    right: auto;
-    top: 0.7rem;
+    width: 8rem;
   }
 }

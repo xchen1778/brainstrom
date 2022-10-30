@@ -67,6 +67,10 @@
         cursor: pointer;
 
         .signUpButton {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          font-size: 1.3rem;
           background-color: #206bff;
           border-radius: 2em;
           width: 3rem;
