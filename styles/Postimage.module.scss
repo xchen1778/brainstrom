@@ -1,0 +1,36 @@
+@import "variables";
+
+.postIdea {
+  cursor: pointer;
+  position: relative;
+  justify-self: stretch;
+  align-self: stretch;
+  animation: fadeIn 300ms ease;
+
+  .postIdeaPicture {
+    object-fit: cover;
+    height: 100%;
+    box-shadow: 0 1px 12px rgb(0 0 0 / 10%);
+    border-radius: 0.5rem;
+  }
+  .postIdeaPictureHover {
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    height: 100%;
+    border-radius: 0.5rem;
+    position: absolute;
+    top: 0;
+    left: 0;
+    color: white;
+    font-size: 1.3rem;
+    opacity: 0;
+    transition: opacity 300ms ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .showPostIdeaPictureHover {
+    opacity: 1;
+  }
+}

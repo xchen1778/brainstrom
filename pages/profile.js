@@ -38,6 +38,9 @@ import loader from "../public/loader.json";
 import Lottie from "lottie-react";
 import { setScrollUp } from "../store/scrollUp-slice";
 import NoData from "../components/NoData";
+import { IoCamera } from "react-icons/io5";
+import { storage } from "../utils/firebase";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 function Profile() {
   const [user, loading] = useAuthState(auth);
@@ -66,6 +69,7 @@ function Profile() {
   });
   const [loadingIcon, setLoadingIcon] = useState(false);
   const [loadingIdeaIcon, setLoadingIdeaIcon] = useState(false);
+  const [showChangeProfile, setShowChangeProfile] = useState(false);
   const scrollUp = useSelector((store) => store.scrollUp);
 
   useEffect(() => {
@@ -229,7 +233,7 @@ function Profile() {
 
   function determineService(url) {
     if (url) {
-      if (url.includes("google")) {
+      if (url.includes("googleusercontent")) {
         return (
           <div className={styles.userSignIn}>
             Signed in via {<FaGoogle className={styles.brandIcon} />}
@@ -333,6 +337,26 @@ function Profile() {
     route.push("/");
   }
 
+  async function handleChange(e) {
+    if (e.target.files[0] === null) return;
+    if (e.target.files[0] !== null && e.target.files[0].size > 3145728) {
+      errorModal("The image file is too big.");
+      return;
+    } else {
+      const imageRef = ref(
+        storage,
+        `profiles/${window.localStorage.getItem("userId")})`
+      );
+      await uploadBytes(imageRef, e.target.files[0]);
+      const url = await getDownloadURL(imageRef);
+      updateProfile(auth.currentUser, {
+        photoURL: url,
+      });
+      dispatch(setLoadingPage(true));
+      window.location.reload(false);
+    }
+  }
+
   return (
     <div
       className={styles.profilePage}
@@ -357,8 +381,33 @@ function Profile() {
           </div>
 
           <div className={styles.userInfo}>
-            <img src={user?.photoURL} className={styles.userProfilePic} />
-
+            <div
+              className={styles.userProfile}
+              onMouseEnter={() => {
+                signInViaEmail && setShowChangeProfile(true);
+              }}
+              onMouseLeave={() => {
+                signInViaEmail && setShowChangeProfile(false);
+              }}
+            >
+              <img src={user?.photoURL} className={styles.userProfilePic} />
+              {signInViaEmail && (
+                <div
+                  className={`${styles.userChangeProfile} ${
+                    showChangeProfile ? styles.userShowChangeProfile : ""
+                  }`}
+                >
+                  <IoCamera className={styles.imageIcon} />
+                  <input
+                    accept="image/*"
+                    type="file"
+                    title=""
+                    className={styles.imageInput}
+                    onChange={handleChange}
+                  />
+                </div>
+              )}
+            </div>
             {editOn ? (
               <form className={styles.changeForm}>
                 <input

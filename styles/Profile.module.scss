@@ -40,9 +40,47 @@
       .userInfo {
         position: sticky;
         top: 3rem;
-        .userProfilePic {
+
+        .userProfile {
+          position: relative;
           width: 8rem;
-          border-radius: 10em;
+          height: 8rem;
+          .userProfilePic {
+            width: 8rem;
+            height: 8rem;
+            object-fit: cover;
+            border-radius: 10em;
+          }
+          .userChangeProfile {
+            color: white;
+            background-color: rgba(0, 0, 0, 0.5);
+            width: 8rem;
+            height: 8rem;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2rem;
+            position: absolute;
+            top: 0;
+            opacity: 0;
+            transition: opacity 200ms ease;
+
+            .imageIcon {
+              position: absolute;
+            }
+            .imageInput {
+              opacity: 0;
+              width: 8rem;
+              height: 8rem;
+              cursor: pointer;
+            }
+          }
+
+          .userShowChangeProfile {
+            opacity: 1;
+            cursor: pointer;
+          }
         }
 
         .changeForm {
@@ -247,7 +285,7 @@
       .userSection {
         .userInfo {
           text-align: center;
-          .userProfilePic {
+          .userProfile {
             margin: 0 auto;
           }
           .changeForm {

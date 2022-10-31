@@ -3,9 +3,11 @@ import { db } from "../utils/firebase";
 import { doc, updateDoc, serverTimestamp } from "firebase/firestore";
 import { errorModal } from "../functions/errorModal";
 import styles from "../styles/Editidea.module.scss";
+import PostImage from "./PostImage";
 
-function EditIdea({ id, idea, setEditOn }) {
+function EditIdea({ id, idea, images, setEditOn }) {
   const [editIdea, setEditIdea] = useState(idea);
+  const [imagesUrl, setImagesUrl] = useState(images);
 
   useEffect(() => {
     const editIdeaTextArea = document.querySelector("#editIdeaTextArea");
@@ -17,8 +19,8 @@ function EditIdea({ id, idea, setEditOn }) {
   async function handleEdit(id) {
     try {
       console.log("run");
-      if (editIdea === idea || editIdea.length === 0 || editIdea.length > 300) {
-        errorModal("Invalid post. Please check again.");
+      if (editIdea.length === 0 || editIdea.length > 300) {
+        errorModal("Sorry, your idea can&apos;t be empty.");
         return;
       } else {
         const ideaRef = doc(db, "ideas", id);
@@ -26,6 +28,7 @@ function EditIdea({ id, idea, setEditOn }) {
           idea: editIdea,
           timestamp: serverTimestamp(),
           edited: true,
+          images: imagesUrl,
         });
         setEditOn(false);
       }
@@ -55,6 +58,24 @@ function EditIdea({ id, idea, setEditOn }) {
         id="editIdeaTextArea"
         autofocus
       ></textarea>
+
+      {images?.length !== 0 && (
+        <div className={styles.postIdeaPictures}>
+          {imagesUrl?.length !== 0 && (
+            <div className={styles.postIdeaPictures}>
+              {imagesUrl?.map((image) => (
+                <PostImage
+                  key={image.path}
+                  path={image.path}
+                  url={image.url}
+                  setImagesUrl={setImagesUrl}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
       <div className={styles.editAction}>
         <p className={styles.editTextCount}>{editIdea.length}/300</p>
         <div className={styles.editButtons}>
@@ -75,7 +96,7 @@ function EditIdea({ id, idea, setEditOn }) {
               e.preventDefault();
               handleEdit(id);
             }}
-            disabled={editIdea.length === 0 || editIdea.length > 300}
+            disabled={editIdea.length > 300}
             className={styles.editIdeaDoneButton}
           >
             Done

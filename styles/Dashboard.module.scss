@@ -24,25 +24,50 @@
     .postIdeaInput {
       display: flex;
       gap: 1.2rem;
+      position: relative;
 
       .postUser {
         height: 3rem;
         border-radius: 50%;
         cursor: pointer;
       }
-      .postIdeaArea {
+      .postIdeaTextPicture {
+        display: flex;
+        flex-direction: column;
         width: 100%;
-        background: transparent;
-        resize: none;
-        overflow: hidden;
-        padding-right: 0.5rem;
+        .postIdeaArea {
+          width: 100%;
+          background: transparent;
+          resize: none;
+          overflow: hidden;
+          padding-right: 2rem;
 
-        &:focus {
-          outline: none;
+          &:focus {
+            outline: none;
+          }
+
+          &::placeholder {
+            color: #c5c5c5;
+          }
         }
+        .postIdeaPictures {
+          margin-top: 2rem;
+          position: relative;
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 2rem;
+        }
+      }
+      .postIdeaCancelButton {
+        position: absolute;
+        top: 0;
+        right: 0;
+        color: #adadad;
+        font-size: 1.8rem;
+        transition: color 300ms ease;
 
-        &::placeholder {
-          color: #c5c5c5;
+        &:hover {
+          color: #171f44;
         }
       }
     }
@@ -74,30 +99,66 @@
         position: relative;
         right: 0;
         display: flex;
-        gap: 2rem;
+        gap: 1.5rem;
 
-        .postIdeaCancelButton {
-          color: #adadad;
-          transition: color 300ms ease;
+        .pictureButton {
+          background-color: #fec846;
+          padding: 0 1rem;
+          border-radius: 3rem;
+          color: white;
+          font-size: 1.5rem;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          position: relative;
+          overflow: hidden;
+          transition: background-color 300ms ease;
+          cursor: pointer;
+          width: 4rem;
+          height: 2.5rem;
 
           &:hover {
-            color: #171f44;
+            background-color: #171f44;
+            cursor: pointer;
+          }
+
+          &:disabled {
+            background-color: #adadad;
+            cursor: default;
+          }
+
+          .imageInput {
+            position: absolute;
+            padding: 5rem;
+            left: 0;
+            opacity: 0;
+            cursor: pointer;
+            &:disabled {
+              cursor: default;
+            }
+          }
+
+          .uploading {
+            transform: scale(2.9);
           }
         }
-
         .postIdeaSubmitButton {
           color: white;
           background-color: #206bff;
-          padding: 0.5rem 2rem;
+          width: 6rem;
+          height: 2.5rem;
           border-radius: 2rem;
           transition: background-color 300ms ease;
+          display: flex;
+          align-items: center;
+          justify-content: center;
 
           &:hover {
             background-color: #171f44;
           }
 
           &:disabled {
-            background-color: #206bff;
+            background-color: #adadad;
           }
         }
       }
@@ -153,6 +214,16 @@
     .postIdeaForm {
       margin-top: 3rem;
       margin-bottom: 3.5rem;
+
+      .postIdeaInput {
+        .postIdeaTextPicture {
+          .postIdeaPictures {
+            margin-top: 3rem;
+            grid-template-columns: repeat(2, 1fr);
+          }
+        }
+      }
+
       .postIdeaSubmitArea {
         margin-left: 0;
         margin-top: 3rem;

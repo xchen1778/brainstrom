@@ -1,6 +1,6 @@
 import { useEffect, useState, memo } from "react";
 import Nav from "../../components/Nav";
-import { db, auth } from "../../utils/firebase";
+import { db, auth, storage } from "../../utils/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useSelector, useDispatch } from "react-redux";
 import { setDropdown } from "../../store/dropdown-slice";
@@ -24,10 +24,16 @@ import { debounce } from "../../functions/debounce";
 import styles from "../../styles/Dashboard.module.scss";
 import Masonry from "react-masonry-css";
 import loader from "../../public/loader.json";
+import uploading from "../../public/uploading.json";
 import Lottie from "lottie-react";
 import { useRouter } from "next/router";
 import Loading from "../../components/Loading";
 import ScrollUp from "../../components/ScrollUp";
+import { AiFillPicture } from "react-icons/ai";
+import { IoClose } from "react-icons/io5";
+import { v4 as uuidv4 } from "uuid";
+import { ref, getDownloadURL, uploadBytes } from "firebase/storage";
+import PostImage from "../../components/PostImage";
 
 function Dashboard() {
   const [user, loading] = useAuthState(auth);
@@ -41,6 +47,9 @@ function Dashboard() {
   const [loadingIcon, setLoadingIcon] = useState(false);
   const [latestDoc, setLatestDoc] = useState(0);
   const [endIdeas, setEndIdeas] = useState(false);
+  const [imagesUrl, setImagesUrl] = useState([]);
+  const [UploadIconOn, setUploadIconOn] = useState(false);
+  const [postIconOn, setPostIconOn] = useState(false);
   const breakpointColumnsObj = {
     default: 3,
     900: 2,
@@ -185,9 +194,10 @@ function Dashboard() {
   async function handleAddIdea() {
     try {
       if (idea.length === 0 || idea.length > 300) {
-        errorModal("Invalid post. Please check again.");
+        errorModal("Sorry, your idea can&apos;t be empty.");
         return;
       } else {
+        setPostIconOn(true);
         setPosting(true);
         const ideasRef = collection(db, "ideas");
         await addDoc(ideasRef, {
@@ -199,8 +209,11 @@ function Dashboard() {
           edited: false,
           likes: [],
           numOfLikes: 0,
+          images: imagesUrl,
         });
         setIdea("");
+        setImagesUrl([]);
+        setPostIconOn(false);
       }
     } catch (error) {
       console.log(error);
@@ -229,36 +242,78 @@ function Dashboard() {
     }
   }
 
+  async function handleUploadImage(e) {
+    console.log("change");
+    if (e.target.files[0] === null) return;
+    if (e.target.files[0] !== null && e.target.files[0]?.size > 3145728) {
+      errorModal("The image file is too big.");
+      return;
+    } else if (imagesUrl.length >= 4) {
+      errorModal("You reached the maximum amount of images.");
+      return;
+    } else {
+      setUploadIconOn(true);
+      const newImage = `ideas/${uuidv4()}`;
+      const imageRef = ref(storage, newImage);
+      await uploadBytes(imageRef, e.target.files[0]);
+      const url = await getDownloadURL(imageRef);
+      setImagesUrl((prev) => [...prev, { path: newImage, url: url }]);
+      setUploadIconOn(false);
+    }
+  }
+
   const postIdeaForm = (
     <>
-      <form
-        className={styles.postIdeaForm}
-        onSubmit={(e) => {
-          e.preventDefault();
-          debouncedHandleAddIdea();
-        }}
-      >
+      <form className={styles.postIdeaForm}>
         <div className={styles.postIdeaInput}>
           <img
             className={styles.postUser}
-            src="https://i.ibb.co/dbBcVSW/profile-picture.png"
+            src={user?.photoURL}
             onClick={() => {
               route.push("/profile");
+              dispatch(setLoadingPage(true));
             }}
           />
-          <textarea
-            id="postIdeaTextArea"
-            placeholder="What's your bright idea?"
-            className={styles.postIdeaArea}
-            value={idea}
-            rows="3"
-            onChange={(e) => {
-              setIdea(e.target.value);
-              e.target.style.height = "inherit";
-              e.target.style.height = `${e.target.scrollHeight}px`;
-            }}
-            onKeyDown={handleEnterPress}
-          ></textarea>
+          <div className={styles.postIdeaTextPicture}>
+            <textarea
+              id="postIdeaTextArea"
+              placeholder="What's your bright idea?"
+              className={styles.postIdeaArea}
+              value={idea}
+              rows="3"
+              onChange={(e) => {
+                setIdea(e.target.value);
+                e.target.style.height = "inherit";
+                e.target.style.height = `${e.target.scrollHeight}px`;
+              }}
+              onKeyDown={handleEnterPress}
+            ></textarea>
+            {imagesUrl.length !== 0 && (
+              <div className={styles.postIdeaPictures}>
+                {imagesUrl.map((image) => (
+                  <PostImage
+                    key={image.path}
+                    path={image.path}
+                    url={image.url}
+                    setImagesUrl={setImagesUrl}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+          {idea && (
+            <button
+              className={styles.postIdeaCancelButton}
+              onClick={(e) => {
+                e.preventDefault();
+                setIdea("");
+                document.querySelector("#postIdeaTextArea").style.height =
+                  "inherit";
+              }}
+            >
+              <IoClose />
+            </button>
+          )}
         </div>
         <div className={styles.postIdeaSubmitArea}>
           <p
@@ -270,25 +325,44 @@ function Dashboard() {
           </p>
 
           <div className={styles.postIdeaButtons}>
-            {idea && (
-              <button
-                className={styles.postIdeaCancelButton}
-                onClick={(e) => {
-                  e.preventDefault();
-                  setIdea("");
-                  document.querySelector("#postIdeaTextArea").style.height =
-                    "inherit";
-                }}
-              >
-                Cancel
-              </button>
-            )}
+            <button
+              className={styles.pictureButton}
+              disabled={imagesUrl.length >= 4}
+            >
+              <input
+                accept="image/*"
+                type="file"
+                title=""
+                className={styles.imageInput}
+                onChange={handleUploadImage}
+                disabled={imagesUrl.length >= 4}
+              />
+              {UploadIconOn ? (
+                <Lottie
+                  animationData={uploading}
+                  className={styles.uploading}
+                />
+              ) : (
+                <AiFillPicture />
+              )}
+            </button>
             <button
               className={styles.postIdeaSubmitButton}
               type="submit"
-              disabled={idea.length === 0 || idea.length > 300}
+              disabled={idea.length > 300}
+              onClick={(e) => {
+                e.preventDefault();
+                debouncedHandleAddIdea();
+              }}
             >
-              Post
+              {postIconOn ? (
+                <Lottie
+                  animationData={uploading}
+                  className={styles.uploading}
+                />
+              ) : (
+                "Post"
+              )}
             </button>
           </div>
         </div>

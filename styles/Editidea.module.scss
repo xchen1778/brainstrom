@@ -2,7 +2,7 @@
   .editArea {
     width: 100%;
     background-color: transparent;
-    margin: 1.5rem 0;
+    margin-top: 1.5rem;
     resize: none;
     overflow: hidden;
     padding-right: 0.5rem;
@@ -11,10 +11,20 @@
       outline: none;
     }
   }
+
+  .postIdeaPictures {
+    margin-top: 1.5rem;
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+  }
+
   .editAction {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    margin-top: 1.5rem;
     .editTextCount {
       font-weight: 300;
       font-size: 0.8rem;

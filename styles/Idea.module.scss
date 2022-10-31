@@ -33,6 +33,7 @@
 }
 
 .idea {
+  width: 100%;
   z-index: 10;
   display: flex;
   flex-direction: column;
@@ -56,11 +57,25 @@
 
   .userIdea {
     word-break: break-word;
+
+    .userImages {
+      display: grid;
+      grid-template-columns: 1fr;
+      place-items: center;
+      gap: 2rem;
+    }
+    .imagesSpace {
+      margin-top: 1rem;
+    }
+    .doubleCol {
+      grid-template-columns: repeat(2, 1fr);
+    }
   }
 
   .ideaButtons {
     display: flex;
     justify-content: space-between;
+    margin-top: 0.5rem;
 
     .firstButtons {
       display: flex;

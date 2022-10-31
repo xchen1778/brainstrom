@@ -11,7 +11,7 @@ function NoData({ method }) {
     <div className={styles.noData}>
       <div className={styles.noDataMessage}>
         <h4 className={styles.noDataTitle}>No idea found.</h4>
-        <p className={styles.noDataText}>You haven't {method} any idea.</p>
+        <p className={styles.noDataText}>You haven&apos;t {method} any idea.</p>
       </div>
       <button
         className={styles.noDataButton}

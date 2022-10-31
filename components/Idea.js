@@ -43,6 +43,7 @@ function Idea({
   ideaPage,
   isAuthor,
   profilePage,
+  images,
 }) {
   const [editOn, setEditOn] = useState(false);
   const [deleteOn, setDeleteOn] = useState(false);
@@ -194,6 +195,16 @@ function Idea({
             <>
               <div className={styles.userIdea}>
                 <p>{idea}</p>
+                <div
+                  className={`${styles.userImages} 
+                  ${images?.length !== 0 ? styles.imagesSpace : ""} ${
+                    images?.length >= 2 ? styles.doubleCol : ""
+                  }`}
+                >
+                  {images?.map((image) => (
+                    <img key={image.path} src={image.url} />
+                  ))}
+                </div>
               </div>
               <div className={styles.ideaButtons}>
                 <div className={styles.firstButtons}>
@@ -268,7 +279,9 @@ function Idea({
         </>
       )}
 
-      {editOn && <EditIdea idea={idea} id={id} setEditOn={setEditOn} />}
+      {editOn && (
+        <EditIdea idea={idea} images={images} id={id} setEditOn={setEditOn} />
+      )}
     </div>
   );
 }
