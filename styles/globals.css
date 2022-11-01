@@ -26,3 +26,32 @@ body {
 .my-masonry-grid_column > div {
   margin-bottom: 30px;
 }
+
+.swiper-button-next,
+.swiper-button-prev {
+  color: white !important;
+  transition: color 300ms ease;
+}
+
+.swiper-button-prev {
+  margin-left: 4rem;
+}
+
+.swiper-button-next {
+  margin-right: 4rem;
+}
+
+.swiper-button-next:hover,
+.swiper-button-prev:hover {
+  color: #206bff !important;
+}
+
+@media screen and (max-width: 500px) {
+  .swiper-button-prev {
+    margin-left: 1rem;
+  }
+
+  .swiper-button-next {
+    margin-right: 1rem;
+  }
+}

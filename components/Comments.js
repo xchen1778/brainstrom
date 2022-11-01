@@ -12,12 +12,14 @@ import {
 import { useAuthState } from "react-firebase-hooks/auth";
 import Comment from "./Comment";
 import { errorModal } from "../functions/errorModal";
+import { getDifference } from "../functions/getDifference";
 import styles from "../styles/Comments.module.scss";
 import { useRouter } from "next/router";
 import { useDispatch } from "react-redux";
 import { setLoadingPage } from "../store/loadingPage-slice";
 import Lottie from "lottie-react";
 import loader from "../public/loader.json";
+import uploading from "../public/uploading.json";
 import { debounce } from "../functions/debounce";
 
 function Comments({ id }) {
@@ -30,6 +32,7 @@ function Comments({ id }) {
   const [endComments, setEndComments] = useState(false);
   const [amountCommentsShown, setAmountCommentsShown] = useState(10);
   const [loadingIcon, setLoadingIcon] = useState(false);
+  const [submitIconOn, setSubmitIconOn] = useState(false);
   const route = useRouter();
   const dispatch = useDispatch();
 
@@ -46,7 +49,7 @@ function Comments({ id }) {
 
   function handleScroll() {
     if (
-      window.innerHeight + window.scrollY >= document.body.offsetHeight &&
+      window.innerHeight + window.scrollY + 10 >= document.body.offsetHeight &&
       endComments === false
     ) {
       setLoadingIcon(true);
@@ -71,12 +74,6 @@ function Comments({ id }) {
 
   function isSameCommentContent(a, b) {
     return a.id === b.id && a.comment === b.comment;
-  }
-
-  function getDifference(a, b, compareFunction) {
-    return a.filter(
-      (aComment) => !b.some((bComment) => compareFunction(aComment, bComment))
-    );
   }
 
   useEffect(() => {
@@ -172,6 +169,7 @@ function Comments({ id }) {
         errorModal("Invalid post. Please check again.");
         return;
       } else {
+        setSubmitIconOn(true);
         setPosting(true);
         const commentsRef = collection(db, "comments");
         await addDoc(commentsRef, {
@@ -187,6 +185,7 @@ function Comments({ id }) {
         });
         setMessage("");
         setShowSubmit(false);
+        setSubmitIconOn(false);
       }
     } catch (error) {
       console.log(error);
@@ -265,7 +264,14 @@ function Comments({ id }) {
                   }}
                   className={styles.commentSubmitButton}
                 >
-                  Submit
+                  {submitIconOn ? (
+                    <Lottie
+                      animationData={uploading}
+                      className={styles.uploading}
+                    />
+                  ) : (
+                    "Submit"
+                  )}
                 </button>
               </div>
             </div>
@@ -275,7 +281,7 @@ function Comments({ id }) {
       {sortedAllComments.slice(0, amountCommentsShown).map((comment) => (
         <div key={comment.id}>
           <Comment id={comment.id} {...comment} />
-          <hr className={styles.commentLine} />
+          <hr />
         </div>
       ))}
       {loadingIcon && amountCommentsShown < allComments.length && (

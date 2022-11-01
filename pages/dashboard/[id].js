@@ -5,6 +5,7 @@ import { setLoadingPage } from "../../store/loadingPage-slice";
 import { setScrollUp } from "../../store/scrollUp-slice";
 import { setDropdown } from "../../store/dropdown-slice";
 import Nav from "../../components/Nav";
+import Head from "next/head";
 import Idea from "../../components/Idea";
 import { db } from "../../utils/firebase";
 import Comments from "../../components/Comments";
@@ -78,6 +79,9 @@ function IdeaDetails({ id }) {
         dispatch(setDropdown(false));
       }}
     >
+      <Head>
+        <title>Idea | Brainstorm</title>
+      </Head>
       <Nav />
       <div
         className={styles.backToDashboard}

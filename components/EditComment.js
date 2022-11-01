@@ -4,9 +4,12 @@ import { doc, updateDoc, serverTimestamp } from "firebase/firestore";
 import { errorModal } from "../functions/errorModal";
 import { debounce } from "../functions/debounce";
 import styles from "../styles/Editcomment.module.scss";
+import uploading from "../public/uploading.json";
+import Lottie from "lottie-react";
 
 function EditComment({ id, comment, setEditOn }) {
   const [editComment, setEditComment] = useState(comment);
+  const [doneIconOn, setDoneIconOn] = useState(false);
 
   useEffect(() => {
     const editCommentTextArea = document.querySelector("#editCommentTextArea");
@@ -17,14 +20,13 @@ function EditComment({ id, comment, setEditOn }) {
 
   async function handleEdit(id) {
     try {
-      if (
-        editComment === comment ||
-        editComment.length === 0 ||
-        editComment.length > 300
-      ) {
+      if (editComment.length === 0 || editComment.length > 300) {
         errorModal("Invalid post. Please check again.");
         return;
+      } else if (editComment === comment) {
+        return;
       } else {
+        setDoneIconOn(true);
         const commentRef = doc(db, "comments", id);
         await updateDoc(commentRef, {
           comment: editComment,
@@ -32,6 +34,7 @@ function EditComment({ id, comment, setEditOn }) {
           edited: true,
         });
         setEditOn(false);
+        setDoneIconOn(false);
       }
     } catch (error) {
       console.log(error);
@@ -82,18 +85,18 @@ function EditComment({ id, comment, setEditOn }) {
             Cancel
           </button>
           <button
-            disabled={
-              editComment === comment ||
-              editComment.length === 0 ||
-              editComment.length > 300
-            }
+            disabled={editComment.length === 0 || editComment.length > 300}
             onClick={(e) => {
               e.preventDefault();
               debouncedHandleEdit(id);
             }}
             className={styles.editCommentSubmitButton}
           >
-            Done
+            {doneIconOn ? (
+              <Lottie animationData={uploading} className={styles.uploading} />
+            ) : (
+              "Done"
+            )}
           </button>
         </div>
       </div>

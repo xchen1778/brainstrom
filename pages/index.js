@@ -96,11 +96,10 @@ function Home() {
       }
     }
     signInEmailLink();
-    dispatch(setLoadingPage(false));
+    dispatch(setLoadingPage(true));
   }, []);
 
   useEffect(() => {
-    dispatch(setLoadingPage(true));
     if (user && !loading) {
       setTimeout(() => {
         route.push("/dashboard");
@@ -178,7 +177,6 @@ function Home() {
     <div className={styles.loginPage}>
       <Head>
         <title>Brainstorm</title>
-        <link rel="icon" href="/favicon.ico" />
       </Head>
       <header className={styles.loginHeader}>
         <Link href={"/"}>

@@ -71,6 +71,11 @@
         padding: 0.5rem 2rem;
         border-radius: 2rem;
         transition: background-color 300ms ease;
+        width: 5rem;
+        height: 2.5rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
 
         &:hover {
           background-color: #171f44;
@@ -79,6 +84,10 @@
         &:disabled {
           background-color: #206bff;
           cursor: not-allowed;
+        }
+
+        .uploading {
+          transform: scale(6);
         }
       }
     }

@@ -27,9 +27,10 @@ import { useRouter } from "next/router";
 import Link from "next/link";
 import { RiDeleteBinLine } from "react-icons/ri";
 import Blackscreen from "./Blackscreen";
-import { animated, useTransition } from "react-spring";
 import { useDispatch } from "react-redux";
 import { setLoadingPage } from "../store/loadingPage-slice";
+import Swiper from "../components/Swiper";
+import { animated, useTransition } from "react-spring";
 
 function Idea({
   id,
@@ -38,7 +39,6 @@ function Idea({
   displayName,
   timestamp,
   edited,
-  userId,
   numOfLikes,
   ideaPage,
   isAuthor,
@@ -51,10 +51,12 @@ function Idea({
   const [fillLike, setFillLike] = useState(false);
   const [alreadyLiked, setAlreadyLiked] = useState(false);
   const [allComments, setAllComments] = useState([]);
+  const [swiperOn, setSwiperOn] = useState(false);
+  const [clickImageIndex, setClickImageIndex] = useState(0);
   const route = useRouter();
   const dispatch = useDispatch();
-  const transitionDelete = useTransition(deleteOn, {
-    from: { opacity: 0 },
+  const transitionImages = useTransition(swiperOn, {
+    from: { opacity: 1 },
     enter: { opacity: 1 },
     leave: { opacity: 0 },
   });
@@ -144,145 +146,175 @@ function Idea({
   }
 
   return (
-    <div
-      className={`${ideaPage ? styles.ideaOnDetails : ""} ${
-        profilePage ? styles.ideaOnProfile : ""
-      }`}
-      onClick={() => {
-        if (!ideaPage) {
-          dispatch(setLoadingPage(true));
-        }
-      }}
-    >
-      <Link
-        href={!ideaPage ? { pathname: `/dashboard/${id}`, query: id } : "#"}
+    <>
+      <div
+        className={`${ideaPage ? styles.ideaOnDetails : ""} ${
+          profilePage ? styles.ideaOnProfile : ""
+        }`}
+        onClick={() => {
+          if (!ideaPage) {
+            dispatch(setLoadingPage(true));
+          }
+        }}
       >
-        <div
-          className={styles.idea}
-          onClick={(e) => {
-            if (ideaPage) {
-              e.preventDefault();
-            }
-          }}
+        <Link
+          href={!ideaPage ? { pathname: `/dashboard/${id}`, query: id } : "#"}
         >
-          <div className={styles.userInfo}>
-            <img className={styles.userPhoto} src={photoURL} />
-            <div>
-              <h3 className={styles.userName}>{displayName}</h3>
-              <p className={styles.postTime}>
-                <span>
-                  {(timestamp
-                    ? new Date(timestamp.seconds * 1000)
-                    : new Date()
-                  ).toLocaleDateString("en-US")}
-                </span>
-                {"  "}
-                <span>
-                  {(timestamp
-                    ? new Date(timestamp.seconds * 1000)
-                    : new Date()
-                  ).toLocaleTimeString([], {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
-                </span>
-                {"  "}
-                {edited && <span>edited</span>}
-              </p>
-            </div>
-          </div>
-          {!editOn && (
-            <>
-              <div className={styles.userIdea}>
-                <p>{idea}</p>
-                <div
-                  className={`${styles.userImages} 
-                  ${images?.length !== 0 ? styles.imagesSpace : ""} ${
-                    images?.length >= 2 ? styles.doubleCol : ""
-                  }`}
-                >
-                  {images?.map((image) => (
-                    <img key={image.path} src={image.url} />
-                  ))}
-                </div>
+          <div
+            className={styles.idea}
+            onClick={(e) => {
+              if (ideaPage) {
+                e.preventDefault();
+              }
+            }}
+          >
+            <div className={styles.userInfo}>
+              <img className={styles.userPhoto} src={photoURL} />
+              <div>
+                <h3 className={styles.userName}>{displayName}</h3>
+                <p className={styles.postTime}>
+                  <span>
+                    {(timestamp
+                      ? new Date(timestamp.seconds * 1000)
+                      : new Date()
+                    ).toLocaleDateString("en-US")}
+                  </span>
+                  {"  "}
+                  <span>
+                    {(timestamp
+                      ? new Date(timestamp.seconds * 1000)
+                      : new Date()
+                    ).toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </span>
+                  {"  "}
+                  {edited && <span>edited</span>}
+                </p>
               </div>
-              <div className={styles.ideaButtons}>
-                <div className={styles.firstButtons}>
-                  <button
-                    className={styles.ideaCommentButton}
-                    onMouseEnter={() => setFillComment(true)}
-                    onMouseLeave={() => setFillComment(false)}
-                  >
-                    {fillComment || commented() ? (
-                      <FaCommentAlt className={styles.fillComment} />
-                    ) : (
-                      <FaRegCommentAlt />
-                    )}
-                    {`${allComments.length}`}
-                  </button>
-                  <button
-                    className={styles.ideaLikeButton}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleLikes();
-                    }}
-                    onMouseEnter={() => setFillLike(true)}
-                    onMouseLeave={() => setFillLike(false)}
-                  >
-                    {fillLike || alreadyLiked ? (
-                      <FaHeart className={styles.fillLike} />
-                    ) : (
-                      <FaRegHeart />
-                    )}
-                    {numOfLikes}
-                  </button>
+            </div>
+            {!editOn && (
+              <>
+                <div className={styles.userIdea}>
+                  <p className={styles.userIdeaText}>{idea}</p>
+                  {images && images?.length !== 0 && (
+                    <>
+                      <hr />
+
+                      <div
+                        className={`${styles.userImages} 
+                    ${images?.length !== 0 ? styles.imagesSpace : ""}
+                ${images?.length >= 2 ? styles.doubleCol : ""}`}
+                      >
+                        {images?.map((image) => (
+                          <img
+                            key={image.path}
+                            src={image.url}
+                            className={`${styles.userImage} ${
+                              ideaPage ? styles.imageHover : ""
+                            }`}
+                            onClick={(e) => {
+                              ideaPage && setSwiperOn(true);
+                              setClickImageIndex(images.indexOf(image));
+                            }}
+                          />
+                        ))}
+                      </div>
+                    </>
+                  )}
                 </div>
-                {isAuthor && ideaPage && (
-                  <div className={styles.secondButtons}>
+                <div className={styles.ideaButtons}>
+                  <div className={styles.firstButtons}>
                     <button
-                      onClick={() => setEditOn(true)}
-                      className={styles.editButton}
+                      className={styles.ideaCommentButton}
+                      onMouseEnter={() => setFillComment(true)}
+                      onMouseLeave={() => setFillComment(false)}
                     >
-                      <FaRegEdit />
+                      {fillComment || commented() ? (
+                        <FaCommentAlt className={styles.fillComment} />
+                      ) : (
+                        <FaRegCommentAlt />
+                      )}
+                      {`${allComments.length}`}
                     </button>
                     <button
-                      onClick={() => setDeleteOn(true)}
-                      className={styles.deleteButton}
+                      className={styles.ideaLikeButton}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleLikes();
+                      }}
+                      onMouseEnter={() => setFillLike(true)}
+                      onMouseLeave={() => setFillLike(false)}
                     >
-                      <RiDeleteBinLine />
+                      {fillLike || alreadyLiked ? (
+                        <FaHeart className={styles.fillLike} />
+                      ) : (
+                        <FaRegHeart />
+                      )}
+                      {numOfLikes}
                     </button>
                   </div>
-                )}
-              </div>
-            </>
-          )}
-        </div>
-      </Link>
-
-      {deleteOn && (
-        <>
-          <Blackscreen />
-          <div className={styles.deleteModal}>
-            <h4 className={styles.deleteTitle}>
-              Do you want to delete this idea?
-            </h4>
-            <div className={styles.deleteButtons}>
-              <button
-                className={styles.deleteButton}
-                onClick={() => handleDelete(id)}
-              >
-                Yes
-              </button>
-              <button onClick={() => setDeleteOn(false)}>No</button>
-            </div>
+                  {isAuthor && ideaPage && (
+                    <div className={styles.secondButtons}>
+                      <button
+                        onClick={() => setEditOn(true)}
+                        className={styles.editButton}
+                      >
+                        <FaRegEdit />
+                      </button>
+                      <button
+                        onClick={() => setDeleteOn(true)}
+                        className={styles.deleteButton}
+                      >
+                        <RiDeleteBinLine />
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </>
+            )}
           </div>
-        </>
-      )}
+        </Link>
 
-      {editOn && (
-        <EditIdea idea={idea} images={images} id={id} setEditOn={setEditOn} />
+        {deleteOn && (
+          <>
+            <Blackscreen />
+            <div className={styles.deleteModal}>
+              <h4 className={styles.deleteTitle}>
+                Do you want to delete this idea?
+              </h4>
+              <div className={styles.deleteButtons}>
+                <button
+                  className={styles.deleteButton}
+                  onClick={() => handleDelete(id)}
+                >
+                  Yes
+                </button>
+                <button onClick={() => setDeleteOn(false)}>No</button>
+              </div>
+            </div>
+          </>
+        )}
+
+        {editOn && (
+          <EditIdea idea={idea} images={images} id={id} setEditOn={setEditOn} />
+        )}
+      </div>
+      {swiperOn && <Blackscreen />}
+      {transitionImages(
+        (style, item) =>
+          item && (
+            <animated.div style={style}>
+              <Swiper
+                setSwiperOn={setSwiperOn}
+                images={images}
+                clickImageIndex={clickImageIndex}
+              />
+            </animated.div>
+          )
       )}
-    </div>
+    </>
   );
 }
 

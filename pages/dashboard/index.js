@@ -1,5 +1,6 @@
 import { useEffect, useState, memo } from "react";
 import Nav from "../../components/Nav";
+import Head from "next/head";
 import { db, auth, storage } from "../../utils/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useSelector, useDispatch } from "react-redux";
@@ -17,6 +18,7 @@ import {
   startAfter,
 } from "firebase/firestore";
 import { errorModal } from "../../functions/errorModal";
+import { getDifference } from "../../functions/getDifference";
 import { ToastContainer, Slide } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Idea from "../../components/Idea";
@@ -63,12 +65,6 @@ function Dashboard() {
 
   function isSameLikedIdea(a, b) {
     return a.id === b.id && a.numOfLikes === b.numOfLikes;
-  }
-
-  function getDifference(a, b, compareFunction) {
-    return a.filter(
-      (aIdea) => !b.some((bIdea) => compareFunction(aIdea, bIdea))
-    );
   }
 
   useEffect(() => {
@@ -194,7 +190,7 @@ function Dashboard() {
   async function handleAddIdea() {
     try {
       if (idea.length === 0 || idea.length > 300) {
-        errorModal("Sorry, your idea can&apos;t be empty.");
+        errorModal("Sorry, your idea can't be empty.");
         return;
       } else {
         setPostIconOn(true);
@@ -231,7 +227,7 @@ function Dashboard() {
 
   function handleScroll() {
     if (
-      window.innerHeight + window.scrollY >= document.body.offsetHeight &&
+      window.innerHeight + window.scrollY + 10 >= document.body.offsetHeight &&
       endIdeas === false
     ) {
       setLoadingIcon(true);
@@ -243,13 +239,14 @@ function Dashboard() {
   }
 
   async function handleUploadImage(e) {
-    console.log("change");
     if (e.target.files[0] === null) return;
     if (e.target.files[0] !== null && e.target.files[0]?.size > 3145728) {
-      errorModal("The image file is too big.");
+      errorModal("The image file is too big. Maximum size is 3Mb.");
       return;
     } else if (imagesUrl.length >= 4) {
-      errorModal("You reached the maximum amount of images.");
+      errorModal(
+        "You reached the maximum amount of images. Maximum amount is 4."
+      );
       return;
     } else {
       setUploadIconOn(true);
@@ -289,16 +286,20 @@ function Dashboard() {
               onKeyDown={handleEnterPress}
             ></textarea>
             {imagesUrl.length !== 0 && (
-              <div className={styles.postIdeaPictures}>
-                {imagesUrl.map((image) => (
-                  <PostImage
-                    key={image.path}
-                    path={image.path}
-                    url={image.url}
-                    setImagesUrl={setImagesUrl}
-                  />
-                ))}
-              </div>
+              <>
+                <hr />
+                <div className={styles.postIdeaPictures}>
+                  {imagesUrl.map((image) => (
+                    <PostImage
+                      key={image.path}
+                      path={image.path}
+                      url={image.url}
+                      setImagesUrl={setImagesUrl}
+                      postIdea={true}
+                    />
+                  ))}
+                </div>
+              </>
             )}
           </div>
           {idea && (
@@ -332,7 +333,7 @@ function Dashboard() {
               <input
                 accept="image/*"
                 type="file"
-                title=""
+                title={imagesUrl.length >= 4 ? "Maximum is 4" : ""}
                 className={styles.imageInput}
                 onChange={handleUploadImage}
                 disabled={imagesUrl.length >= 4}
@@ -348,7 +349,6 @@ function Dashboard() {
             </button>
             <button
               className={styles.postIdeaSubmitButton}
-              type="submit"
               disabled={idea.length > 300}
               onClick={(e) => {
                 e.preventDefault();
@@ -378,6 +378,9 @@ function Dashboard() {
       }}
       className={styles.dashboard}
     >
+      <Head>
+        <title>Dashboard | Brainstorm</title>
+      </Head>
       <Nav isDashboard={true} />
       <main>
         {user && postIdeaForm}

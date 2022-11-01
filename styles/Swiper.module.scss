@@ -1,0 +1,49 @@
+@import "variables";
+
+.container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 20;
+  animation: fade 500ms ease;
+  .closeContainer {
+    color: white;
+    position: absolute;
+    right: 4rem;
+    top: 3rem;
+    font-size: 3rem;
+    z-index: 100;
+    cursor: pointer;
+    transition: color 300ms ease;
+
+    &:hover {
+      color: #206bff;
+    }
+  }
+  .mySwiper {
+    width: 100vw;
+    height: 100vh;
+    z-index: 20;
+    .swiperSlide {
+      -webkit-transform: translateZ(0);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      img {
+        margin: 0 auto;
+        width: 50%;
+        height: 50%;
+        object-fit: contain;
+      }
+    }
+  }
+}
+
+@include mobile() {
+  .container {
+    .closeContainer {
+      top: 2rem;
+      right: 1rem;
+    }
+  }
+}

@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import Head from "next/head";
 import Nav from "../components/Nav";
 import { db, auth } from "../utils/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
@@ -364,6 +365,9 @@ function Profile() {
         dispatch(setDropdown(false));
       }}
     >
+      <Head>
+        <title>Profile | Brainstorm</title>
+      </Head>
       <Nav isProfile={true} />
       <main className={styles.profileContent}>
         <section className={styles.userSection}>
@@ -542,7 +546,9 @@ function Profile() {
             {showMyIdeas &&
               (myIdeas.length ? (
                 myIdeas.map((idea) => (
-                  <Idea key={idea.id} {...idea} profilePage={true} />
+                  <div key={idea.id} className={styles.idea}>
+                    <Idea {...idea} profilePage={true} />
+                  </div>
                 ))
               ) : loadingIcon ? (
                 <Lottie animationData={loader} className={styles.lottie} />
@@ -551,11 +557,11 @@ function Profile() {
               ))}
             {showLikedIdeas &&
               (likedIdeas.length ? (
-                likedIdeas
-                  .slice(0, amountLikedIdeas)
-                  .map((idea) => (
-                    <Idea key={idea.id} {...idea} profilePage={true} />
-                  ))
+                likedIdeas.slice(0, amountLikedIdeas).map((idea) => (
+                  <div key={idea.id} className={styles.idea}>
+                    <Idea {...idea} profilePage={true} />
+                  </div>
+                ))
               ) : loadingIcon ? (
                 <Lottie animationData={loader} className={styles.lottie} />
               ) : (
@@ -563,11 +569,11 @@ function Profile() {
               ))}
             {showCommentedIdeas &&
               (commentedIdeas.length ? (
-                commentedIdeas
-                  .slice(0, amountCommentedIdeas)
-                  .map((idea) => (
-                    <Idea key={idea.id} {...idea} profilePage={true} />
-                  ))
+                commentedIdeas.slice(0, amountCommentedIdeas).map((idea) => (
+                  <div key={idea.id} className={styles.idea}>
+                    <Idea {...idea} profilePage={true} />
+                  </div>
+                ))
               ) : loadingIcon ? (
                 <Lottie animationData={loader} className={styles.lottie} />
               ) : (

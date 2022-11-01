@@ -91,7 +91,12 @@
           background-color: #206bff;
           padding: 0.5rem 2rem;
           border-radius: 2rem;
+          width: 7rem;
+          height: 2.5rem;
           transition: background-color 300ms ease;
+          display: flex;
+          justify-content: center;
+          align-items: center;
 
           &:hover {
             background-color: #171f44;
@@ -101,13 +106,13 @@
             background-color: #206bff;
             cursor: not-allowed;
           }
+
+          .uploading {
+            transform: scale(2.1);
+          }
         }
       }
     }
-  }
-
-  .commentLine:last-of-type {
-    display: none;
   }
 
   .lottie {

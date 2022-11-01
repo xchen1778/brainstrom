@@ -13,4 +13,9 @@
   cursor: pointer;
   animation: fadeIn 300ms ease;
   z-index: 10 !important;
+  transition: background-color 300ms ease;
+
+  &:hover {
+    background-color: #1141a0;
+  }
 }

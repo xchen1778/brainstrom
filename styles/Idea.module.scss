@@ -26,7 +26,7 @@
   );
   border: 1px solid white;
   box-shadow: 0 1px 12px rgb(0 0 0 / 5%);
-  border-radius: 0.8em;
+  border-radius: 1em;
   padding: 2rem;
   cursor: pointer;
   animation: fadeIn 300ms ease;
@@ -56,26 +56,45 @@
   }
 
   .userIdea {
-    word-break: break-word;
+    .userIdeaText {
+      word-break: break-word;
+      margin-bottom: 1.5rem;
+    }
 
     .userImages {
       display: grid;
       grid-template-columns: 1fr;
-      place-items: center;
-      gap: 2rem;
+      gap: 1.5rem;
+
+      .userImage {
+        box-shadow: 0 1px 12px rgb(0 0 0 / 8%);
+        border-radius: 0.7em;
+        object-fit: cover;
+        justify-self: stretch;
+        align-self: stretch;
+        cursor: pointer;
+      }
+
+      .imageHover {
+        transition: transform 300ms ease;
+
+        &:hover {
+          transform: translateY(-0.2rem);
+        }
+      }
     }
     .imagesSpace {
-      margin-top: 1rem;
+      margin: 1.5rem 0;
     }
     .doubleCol {
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: repeat(4, 1fr);
     }
   }
 
   .ideaButtons {
     display: flex;
     justify-content: space-between;
-    margin-top: 0.5rem;
+    margin-top: -1rem;
 
     .firstButtons {
       display: flex;

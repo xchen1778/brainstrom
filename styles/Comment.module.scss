@@ -3,6 +3,7 @@
 .comment {
   position: relative;
   margin: 2rem;
+  z-index: 0;
 
   .userInfo {
     display: flex;

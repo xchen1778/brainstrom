@@ -45,6 +45,8 @@
           position: relative;
           width: 8rem;
           height: 8rem;
+          object-fit: cover;
+          border-radius: 10em;
           .userProfilePic {
             width: 8rem;
             height: 8rem;
@@ -264,6 +266,18 @@
       .ideasContent {
         margin: 1.7rem auto;
 
+        .idea {
+          transition: all 500ms ease;
+          &:hover {
+            background: linear-gradient(
+              45deg,
+              rgba(255, 255, 255, 1) 0%,
+              rgba(255, 255, 255, 0.5) 100%
+            );
+            border-radius: 0.8rem;
+            transform: translateY(-5px);
+          }
+        }
         .lottie {
           width: 10rem;
           margin: 0 auto;

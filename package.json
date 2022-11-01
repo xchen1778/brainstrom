@@ -29,6 +29,7 @@
     "react-spring": "^9.5.5",
     "react-toastify": "^9.0.8",
     "sass": "^1.55.0",
+    "swiper": "^8.4.4",
     "uuid": "^9.0.0"
   },
   "devDependencies": {

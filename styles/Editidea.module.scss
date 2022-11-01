@@ -1,30 +1,52 @@
+@import "variables";
+
 .editForm {
-  .editArea {
-    width: 100%;
-    background-color: transparent;
-    margin-top: 1.5rem;
-    resize: none;
-    overflow: hidden;
-    padding-right: 0.5rem;
-
-    &:focus {
-      outline: none;
-    }
-  }
-
-  .postIdeaPictures {
-    margin-top: 1.5rem;
+  .editIdeaInputSection {
     position: relative;
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 1rem;
+    .editIdeaInput {
+      .editArea {
+        width: 100%;
+        background-color: transparent;
+        margin-top: 1.5rem;
+        margin-bottom: 1rem;
+        resize: none;
+        overflow: hidden;
+        padding-right: 2rem;
+
+        &:focus {
+          outline: none;
+        }
+      }
+
+      .postIdeaPictures {
+        margin-top: 2rem;
+        position: relative;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1rem;
+      }
+    }
+
+    .editIdeaCancelIcon {
+      position: absolute;
+      top: 1.3rem;
+      right: 0;
+      color: #adadad;
+      font-size: 1.8rem;
+      transition: color 300ms ease;
+      display: none;
+
+      &:hover {
+        color: #171f44;
+      }
+    }
   }
 
   .editAction {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-top: 1.5rem;
+    margin-top: 2.5rem;
     .editTextCount {
       font-weight: 300;
       font-size: 0.8rem;
@@ -33,7 +55,7 @@
 
     .editButtons {
       display: flex;
-      gap: 2rem;
+      gap: 1.5rem;
       .editIdeaCancelButton {
         color: #adadad;
         transition: color 300ms ease;
@@ -43,12 +65,60 @@
         }
       }
 
+      .pictureButton {
+        background-color: #fec846;
+        padding: 0 1rem;
+        border-radius: 3rem;
+        color: white;
+        font-size: 1.5rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        overflow: hidden;
+        transition: background-color 300ms ease;
+        cursor: pointer;
+        width: 4rem;
+        height: 2.5rem;
+
+        &:hover {
+          background-color: #171f44;
+          cursor: pointer;
+        }
+
+        &:disabled {
+          background-color: #adadad;
+          cursor: default;
+        }
+
+        .imageInput {
+          position: absolute;
+          padding: 5rem;
+          left: 0;
+          opacity: 0;
+          cursor: pointer;
+          &:disabled {
+            cursor: default;
+          }
+        }
+
+        .uploading {
+          transform: scale(2.9);
+        }
+      }
+
       .editIdeaDoneButton {
         color: white;
         background-color: #206bff;
         padding: 0.5rem 2rem;
         border-radius: 2rem;
+        width: 6rem;
+        height: 2.5rem;
+        overflow: hidden;
         transition: background-color 300ms ease;
+        display: flex;
+        justify-content: center;
+        align-items: center;
 
         &:hover {
           background-color: #171f44;
@@ -57,6 +127,27 @@
         &:disabled {
           background-color: #206bff;
           cursor: not-allowed;
+        }
+        .uploading {
+          transform: scale(2.9);
+        }
+      }
+    }
+  }
+}
+
+@include mobile() {
+  .editForm {
+    .editIdeaInputSection {
+      .editIdeaCancelIcon {
+        display: block;
+      }
+    }
+
+    .editAction {
+      .editButtons {
+        .editIdeaCancelButton {
+          display: none;
         }
       }
     }
