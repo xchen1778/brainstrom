@@ -20,14 +20,14 @@
 
   .dropdownButton {
     &:hover {
-      color: #206bff;
+      color: $blue;
     }
   }
 
   .profileButton {
-    color: #1141a0;
+    color: $dark-blue;
     &:hover {
-      color: #1141a0;
+      color: $dark-blue;
     }
   }
 }

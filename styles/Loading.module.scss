@@ -1,7 +1,9 @@
+@import "variables";
+
 .loadingPage {
   width: 100vw;
   height: 100vh;
-  background-color: #f3f8fe;
+  background-color: $gray-100;
   position: fixed;
   top: 0;
   left: 0;

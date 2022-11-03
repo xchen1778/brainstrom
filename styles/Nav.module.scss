@@ -30,7 +30,7 @@
       cursor: pointer;
 
       &:hover {
-        background-color: #dfe5ed;
+        background-color: $gray-300;
       }
 
       .userPhoto {
@@ -42,14 +42,14 @@
     }
 
     .signInUpButton {
-      color: white;
-      background-color: #206bff;
+      color: $white;
+      background-color: $blue;
       padding: 0.6rem 2rem;
       border-radius: 2rem;
       transition: background-color 300ms ease;
 
       &:hover {
-        background-color: #171f44;
+        background-color: $navy;
       }
     }
   }

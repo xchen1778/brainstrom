@@ -39,19 +39,52 @@
   flex-direction: column;
   gap: 1.5rem;
   .userInfo {
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
+    .userInfoSection {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
 
-    .userPhoto {
-      border-radius: 50%;
-      height: 3rem;
-    }
+      .userPhotoSection {
+        width: 3rem;
+        height: 3rem;
+        position: relative;
+        transition: opacity 300ms ease;
+        cursor: pointer;
+        .userPhoto {
+          width: 3rem;
+          height: 3rem;
+          border-radius: 50%;
+          object-fit: cover;
+        }
+        &::before {
+          content: "";
+          position: absolute;
+          left: 0;
+          top: 0;
+          width: 100%;
+          height: 100%;
+          background: white;
+          opacity: 0;
+          border-radius: 50%;
+          transition: opacity 300ms ease;
+        }
+        &:hover::before {
+          opacity: 0.3;
+        }
+      }
 
-    .postTime {
-      font-size: 0.8rem;
-      font-weight: 400;
-      color: #adadad;
+      .userName {
+        &:hover {
+          text-decoration: underline;
+          cursor: pointer;
+        }
+      }
+      .postTime {
+        font-size: 0.8rem;
+        font-weight: 400;
+        color: $gray-500;
+        cursor: pointer;
+      }
     }
   }
 
@@ -104,15 +137,15 @@
         display: flex;
         align-items: center;
         gap: 0.35rem;
-        color: #adadad;
+        color: $gray-500;
       }
 
       .fillComment {
-        color: #fec846;
+        color: $yellow;
       }
 
       .fillLike {
-        color: #ff7262;
+        color: $red;
       }
     }
 
@@ -122,12 +155,12 @@
 
       .editButton,
       .deleteButton {
-        color: #adadad;
+        color: $gray-500;
         font-size: 1.05rem;
         transition: color 300ms ease;
 
         &:hover {
-          color: #171f44;
+          color: $navy;
         }
       }
     }
@@ -139,7 +172,7 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background-color: #f6faff;
+  background-color: $gray-200;
   padding: 3rem;
   border-radius: 1rem;
   max-width: 30rem;
@@ -159,8 +192,8 @@
     margin-top: 1.5rem;
 
     button {
-      color: white;
-      background-color: #206bff;
+      color: $white;
+      background-color: $blue;
       padding: 0.8rem;
       border-radius: 2rem;
       width: 5rem;
@@ -169,12 +202,12 @@
       cursor: pointer;
 
       &:hover {
-        background-color: #1141a0;
+        background-color: $dark-blue;
       }
     }
 
     .deleteButton {
-      background-color: #adadad;
+      background-color: $gray-500;
     }
   }
 }

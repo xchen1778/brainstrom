@@ -21,6 +21,7 @@ import { errorModal } from "../functions/errorModal";
 import { useRouter } from "next/router";
 import styles from "../styles/Signin.module.scss";
 import { IoCloseCircle } from "react-icons/io5";
+import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 import { FaGoogle, FaFacebookF, FaTwitter, FaGithub } from "react-icons/fa";
 import EmailSent from "./EmailSent";
 import { useAuthState } from "react-firebase-hooks/auth";
@@ -30,6 +31,7 @@ function SignIn({ isHomePage }) {
   const [password, setPassword] = useState("");
   const [emailLinkSent, setEmailLinkSent] = useState(false);
   const [passwordPage, setPasswordPage] = useState(false);
+  const [passwordShown, setPasswordShown] = useState(false);
   const dispatch = useDispatch();
   const route = useRouter();
   const googleProvider = new GoogleAuthProvider();
@@ -240,6 +242,7 @@ function SignIn({ isHomePage }) {
             type="email"
             value={email}
             onChange={(e) => dispatch(setEmail(e.target.value))}
+            id="signinEmailField"
           />
           <label htmlFor="signinEmailField">Email</label>
         </div>
@@ -251,8 +254,30 @@ function SignIn({ isHomePage }) {
             onChange={(e) => {
               setPassword(e.target.value);
             }}
+            id="signinPassword"
           />
           <label htmlFor="signinPassword">Password</label>
+          {passwordShown ? (
+            <div
+              className={styles.passwordShowIcon}
+              onClick={() => {
+                setPasswordShown(false);
+                document.querySelector("#signinPassword").type = "password";
+              }}
+            >
+              <AiFillEyeInvisible />
+            </div>
+          ) : (
+            <div
+              className={styles.passwordShowIcon}
+              onClick={() => {
+                setPasswordShown(true);
+                document.querySelector("#signinPassword").type = "text";
+              }}
+            >
+              <AiFillEye />
+            </div>
+          )}
         </div>
         <button className={styles.signinButton}>Log in</button>
       </form>

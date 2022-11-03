@@ -16,7 +16,7 @@ import SignUp from "./SignUp";
 import ForgotPassword from "./ForgotPassword";
 import VerifyEmail from "./VerifyEmail";
 
-function Nav({ isHomePage, isDashboard, isProfile }) {
+function Nav({ isDashboard, isProfile }) {
   const [user, loading] = useAuthState(auth);
   const dropdown = useSelector((store) => store.dropdown);
   const signinModal = useSelector((store) => store.signinModal);

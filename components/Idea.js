@@ -1,6 +1,6 @@
 import { useState, useEffect, memo } from "react";
 import EditIdea from "./EditIdea";
-import { db } from "../utils/firebase";
+import { db, auth } from "../utils/firebase";
 import {
   doc,
   deleteDoc,
@@ -31,6 +31,7 @@ import { useDispatch } from "react-redux";
 import { setLoadingPage } from "../store/loadingPage-slice";
 import Swiper from "../components/Swiper";
 import { animated, useTransition } from "react-spring";
+import { useAuthState } from "react-firebase-hooks/auth";
 
 function Idea({
   id,
@@ -44,6 +45,8 @@ function Idea({
   isAuthor,
   profilePage,
   images,
+  userId,
+  viewer,
 }) {
   const [editOn, setEditOn] = useState(false);
   const [deleteOn, setDeleteOn] = useState(false);
@@ -53,6 +56,7 @@ function Idea({
   const [allComments, setAllComments] = useState([]);
   const [swiperOn, setSwiperOn] = useState(false);
   const [clickImageIndex, setClickImageIndex] = useState(0);
+  const [user, loading] = useAuthState(auth);
   const route = useRouter();
   const dispatch = useDispatch();
   const transitionImages = useTransition(swiperOn, {
@@ -62,6 +66,8 @@ function Idea({
   });
 
   useEffect(() => {
+    console.log("viewer", viewer);
+    console.log("userId", userId);
     getAllComments();
     liked();
   }, []);
@@ -169,31 +175,72 @@ function Idea({
             }}
           >
             <div className={styles.userInfo}>
-              <img className={styles.userPhoto} src={photoURL} />
-              <div>
-                <h3 className={styles.userName}>{displayName}</h3>
-                <p className={styles.postTime}>
-                  <span>
-                    {(timestamp
-                      ? new Date(timestamp.seconds * 1000)
-                      : new Date()
-                    ).toLocaleDateString("en-US")}
-                  </span>
-                  {"  "}
-                  <span>
-                    {(timestamp
-                      ? new Date(timestamp.seconds * 1000)
-                      : new Date()
-                    ).toLocaleTimeString([], {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
-                  </span>
-                  {"  "}
-                  {edited && <span>edited</span>}
-                </p>
-              </div>
+              <Link
+                href={
+                  profilePage
+                    ? viewer === userId
+                      ? "#"
+                      : {
+                          pathname: "/loading",
+                          query: {
+                            uId: userId,
+                            uName: displayName,
+                            uPic: photoURL,
+                          },
+                        }
+                    : {
+                        pathname: "/profile",
+                        query: {
+                          uId: userId,
+                          uName: displayName,
+                          uPic: photoURL,
+                        },
+                      }
+                }
+                className={styles.userPhotoSection}
+              >
+                <div
+                  className={styles.userInfoSection}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (!profilePage) {
+                      dispatch(setLoadingPage(true));
+                    }
+                    if (viewer === userId) {
+                      dispatch(setLoadingPage(false));
+                    }
+                  }}
+                >
+                  <div className={styles.userPhotoSection}>
+                    <img className={styles.userPhoto} src={photoURL} />
+                  </div>
+                  <div>
+                    <h3 className={styles.userName}>{displayName}</h3>
+                    <p className={styles.postTime}>
+                      <span>
+                        {(timestamp
+                          ? new Date(timestamp.seconds * 1000)
+                          : new Date()
+                        ).toLocaleDateString("en-US")}
+                      </span>
+                      {"  "}
+                      <span>
+                        {(timestamp
+                          ? new Date(timestamp.seconds * 1000)
+                          : new Date()
+                        ).toLocaleTimeString([], {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </span>
+                      {"  "}
+                      {edited && <span>edited</span>}
+                    </p>
+                  </div>
+                </div>
+              </Link>
             </div>
+
             {!editOn && (
               <>
                 <div className={styles.userIdea}>

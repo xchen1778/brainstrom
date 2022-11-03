@@ -14,14 +14,14 @@
 
   .emailSentText {
     font-weight: 400;
-    color: #6f6f6f;
+    color: $gray-800;
     text-align: center;
     font-size: 0.8rem;
   }
 
   .emailSentButton {
-    color: white;
-    background-color: #206bff;
+    color: $white;
+    background-color: $blue;
     padding: 0.8rem;
     margin-top: 1rem;
     border-radius: 2rem;
@@ -31,7 +31,7 @@
     cursor: pointer;
 
     &:hover {
-      background-color: #1141a0;
+      background-color: $dark-blue;
     }
   }
 }

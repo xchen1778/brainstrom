@@ -37,7 +37,7 @@
     .textCount {
       font-weight: 300;
       font-size: 0.8rem;
-      color: #adadad;
+      color: $gray-500;
       visibility: hidden;
     }
 
@@ -46,7 +46,7 @@
     }
 
     .textOverCount {
-      color: #ff7262;
+      color: $red;
       font-weight: 500;
     }
 
@@ -57,17 +57,17 @@
       gap: 2rem;
 
       .editCommentCancelButton {
-        color: #adadad;
+        color: $gray-500;
         transition: color 300ms ease;
 
         &:hover {
-          color: #171f44;
+          color: $navy;
         }
       }
 
       .editCommentSubmitButton {
-        color: white;
-        background-color: #206bff;
+        color: $white;
+        background-color: $blue;
         padding: 0.5rem 2rem;
         border-radius: 2rem;
         transition: background-color 300ms ease;
@@ -78,11 +78,11 @@
         align-items: center;
 
         &:hover {
-          background-color: #171f44;
+          background-color: $navy;
         }
 
         &:disabled {
-          background-color: #206bff;
+          background-color: $blue;
           cursor: not-allowed;
         }
 

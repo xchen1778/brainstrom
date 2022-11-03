@@ -30,13 +30,13 @@
 
     .noDataText {
       font-size: 0.9rem;
-      color: #adadad;
+      color: $gray-500;
     }
   }
 
   .noDataButton {
-    color: white;
-    background-color: #206bff;
+    color: $white;
+    background-color: $blue;
     padding: 0.6rem 2rem;
     border-radius: 2rem;
     align-self: center;
@@ -44,7 +44,7 @@
     cursor: pointer;
 
     &:hover {
-      background-color: #1141a0;
+      background-color: $dark-blue;
     }
   }
 }

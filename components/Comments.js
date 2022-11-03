@@ -284,6 +284,9 @@ function Comments({ id }) {
           <hr />
         </div>
       ))}
+      {allComments.length === 0 && (
+        <p className={styles.noComment}>No comment so far.</p>
+      )}
       {loadingIcon && amountCommentsShown < allComments.length && (
         <Lottie animationData={loader} className={styles.lottie} />
       )}

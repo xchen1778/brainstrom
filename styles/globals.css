@@ -9,6 +9,7 @@ body {
   font-weight: 500;
   color: #171f44;
   user-select: none;
+  scroll-behavior: smooth;
 }
 
 .my-masonry-grid {

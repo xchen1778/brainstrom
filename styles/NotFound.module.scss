@@ -1,0 +1,54 @@
+@import "variables";
+
+.notFoundPage {
+  width: 100vw;
+  height: 100vh;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-image: url("/404-background.png");
+  background-position: center;
+  background-size: cover;
+
+  .nav {
+    position: absolute;
+    top: 4rem;
+    .logoLink {
+      cursor: pointer;
+      .logo {
+        height: 2rem;
+      }
+    }
+  }
+
+  .notFoundText {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+
+    .notFoundTitle {
+      font-family: $header;
+      font-size: 8rem;
+    }
+    .notFoundContent {
+      font-size: 1.3rem;
+    }
+  }
+}
+
+@include tablet() {
+  .notFoundPage {
+    .notFoundText {
+      gap: 1rem;
+      .notFoundTitle {
+        font-size: 6rem;
+      }
+      .notFoundContent {
+        font-size: 1.2rem;
+      }
+    }
+  }
+}

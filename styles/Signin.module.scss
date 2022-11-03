@@ -5,7 +5,7 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background-color: #f6faff;
+  background-color: $gray-200;
   padding: 3rem;
   border-radius: 1rem;
   width: 30rem;
@@ -17,12 +17,12 @@
     position: absolute;
     top: 1rem;
     right: 1rem;
-    color: #171f44;
+    color: $navy;
     cursor: pointer;
     transition: color 300ms ease;
 
     &:hover {
-      color: #206bff;
+      color: $blue;
     }
   }
 
@@ -46,8 +46,8 @@
         justify-content: center;
         align-items: center;
         font-size: 1.3rem;
-        background-color: #206bff;
-        color: white;
+        background-color: $blue;
+        color: $white;
         border-radius: 2em;
         width: 3rem;
         height: 3rem;
@@ -55,7 +55,7 @@
         transition: background-color 300ms ease;
 
         &:hover {
-          background-color: #1141a0;
+          background-color: $dark-blue;
         }
       }
     }
@@ -63,14 +63,14 @@
     .line {
       width: 100%;
       height: 1px;
-      background-color: #949494;
+      background-color: $gray-700;
     }
 
     .orText {
-      color: #949494;
+      color: $gray-700;
       margin: 0 auto;
       margin-top: -0.8rem;
-      background-color: #f6faff;
+      background-color: $gray-200;
       width: 2rem;
       text-align: center;
     }
@@ -104,21 +104,21 @@
           }
 
           &:focus {
-            outline-color: #206bff;
+            outline-color: $blue;
           }
         }
 
         input:focus + label,
         input:not(:placeholder-shown) + label {
           transform: translateY(-0.6rem) scale(0.8);
-          color: #171f44;
+          color: $navy;
         }
 
         label {
           position: absolute;
           top: 1rem;
           left: 1.2rem;
-          color: #949494;
+          color: $gray-700;
           font-weight: 400;
           transform-origin: 0 0;
           transition: all 300ms ease;
@@ -134,8 +134,8 @@
         gap: 0.3rem;
 
         .signinPassword {
-          color: white;
-          background-color: #206bff;
+          color: $white;
+          background-color: $blue;
           padding: 0.8rem;
           border-radius: 2rem;
           width: 15rem;
@@ -145,7 +145,7 @@
           font-size: 1rem;
 
           &:hover {
-            background-color: #1141a0;
+            background-color: $dark-blue;
           }
         }
 
@@ -154,13 +154,13 @@
           margin: 0;
           padding: 0;
           font-size: 0.8rem;
-          color: #949494;
+          color: $gray-700;
         }
 
         .signinLink {
           background-color: transparent;
-          border: 1px solid #206bff;
-          color: #206bff;
+          border: 1px solid $blue;
+          color: $blue;
           padding: 0.8rem;
           border-radius: 2rem;
           width: 15rem;
@@ -170,8 +170,8 @@
           font-size: 1rem;
 
           &:hover {
-            color: white;
-            background-color: #1141a0;
+            color: $white;
+            background-color: $dark-blue;
           }
         }
       }
@@ -180,16 +180,16 @@
     .signupText {
       text-align: center;
       font-size: 0.8rem;
-      color: #0f0b2b;
+      color: $black;
       margin-top: 3rem;
 
       span {
-        color: #206bff;
+        color: $blue;
         transition: color 300ms ease;
         cursor: pointer;
 
         &:hover {
-          color: #1141a0;
+          color: $dark-blue;
         }
       }
     }
@@ -233,29 +233,42 @@
           }
 
           &:focus {
-            outline-color: #206bff;
+            outline-color: $blue;
           }
         }
 
         input:focus + label,
         input:not(:placeholder-shown) + label {
           transform: translateY(-0.6rem) scale(0.8);
-          color: #171f44;
+          color: $navy;
         }
 
         label {
           position: absolute;
           top: 1rem;
           left: 1.2rem;
-          color: #949494;
+          color: $gray-700;
           font-weight: 400;
           transform-origin: 0 0;
           transition: all 300ms ease;
         }
+        .passwordShowIcon {
+          position: absolute;
+          right: 1rem;
+          top: 1rem;
+          font-size: 1.5rem;
+          color: $gray-700;
+          cursor: pointer;
+          transition: color 300ms ease;
+
+          &:hover {
+            color: $dark-blue;
+          }
+        }
       }
       .signinButton {
-        color: white;
-        background-color: #206bff;
+        color: $white;
+        background-color: $blue;
         padding: 0.8rem;
         margin-top: 1rem;
         border-radius: 2rem;
@@ -265,7 +278,7 @@
         cursor: pointer;
 
         &:hover {
-          background-color: #1141a0;
+          background-color: $dark-blue;
         }
       }
     }
@@ -273,12 +286,12 @@
     .forgotText {
       text-align: center;
       font-size: 0.8rem;
-      color: #6f6f6f;
+      color: $gray-800;
       transition: color 300ms ease;
       cursor: pointer;
 
       &:hover {
-        color: #1141a0;
+        color: $dark-blue;
       }
     }
   }
@@ -299,7 +312,7 @@
         p {
           font-size: 0.8rem;
           margin-top: -0.8rem;
-          color: #9e9e9e;
+          color: $gray-600;
           font-weight: 400;
         }
 

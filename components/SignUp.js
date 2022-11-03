@@ -11,12 +11,14 @@ import { errorModal } from "../functions/errorModal";
 import { useRouter } from "next/router";
 import styles from "../styles/Signup.module.scss";
 import { IoCloseCircle } from "react-icons/io5";
+import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 import { useAuthState } from "react-firebase-hooks/auth";
 
 function SignUp({ isHomePage }) {
   const [registerName, setRegisterName] = useState("");
   const [registerEmail, setRegisterEmail] = useState("");
   const [registerPassword, setRegisterPassword] = useState("");
+  const [passwordShown, setPasswordShown] = useState(false);
   const dispatch = useDispatch();
   const route = useRouter();
   const [user, loading] = useAuthState(auth);
@@ -118,6 +120,28 @@ function SignUp({ isHomePage }) {
               id="signupPassword"
             />
             <label htmlFor="signupPassword">Password</label>
+
+            {passwordShown ? (
+              <div
+                className={styles.passwordShowIcon}
+                onClick={() => {
+                  setPasswordShown(false);
+                  document.querySelector("#signupPassword").type = "password";
+                }}
+              >
+                <AiFillEyeInvisible />
+              </div>
+            ) : (
+              <div
+                className={styles.passwordShowIcon}
+                onClick={() => {
+                  setPasswordShown(true);
+                  document.querySelector("#signupPassword").type = "text";
+                }}
+              >
+                <AiFillEye />
+              </div>
+            )}
           </div>
           <p>*Password must be at least 6 characters.</p>
           <button>Sign up</button>

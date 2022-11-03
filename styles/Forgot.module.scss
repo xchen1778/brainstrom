@@ -5,7 +5,7 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background-color: #f6faff;
+  background-color: $gray-200;
   padding: 3rem;
   border-radius: 1rem;
   width: 30rem;
@@ -17,12 +17,12 @@
     position: absolute;
     top: 1rem;
     right: 1rem;
-    color: #171f44;
+    color: $navy;
     cursor: pointer;
     transition: color 300ms ease;
 
     &:hover {
-      color: #206bff;
+      color: $blue;
     }
   }
 
@@ -64,21 +64,21 @@
           }
 
           &:focus {
-            outline-color: #206bff;
+            outline-color: $blue;
           }
         }
 
         input:focus + label,
         input:not(:placeholder-shown) + label {
           transform: translateY(-0.6rem) scale(0.8);
-          color: #171f44;
+          color: $navy;
         }
 
         label {
           position: absolute;
           top: 1rem;
           left: 1.2rem;
-          color: #949494;
+          color: $gray-700;
           font-weight: 400;
           transform-origin: 0 0;
           transition: all 300ms ease;
@@ -87,8 +87,8 @@
 
       .forgotButton {
         margin-top: 0.8rem;
-        color: white;
-        background-color: #206bff;
+        color: $white;
+        background-color: $blue;
         padding: 0.8rem;
         border-radius: 2rem;
         width: 15rem;
@@ -97,7 +97,7 @@
         cursor: pointer;
 
         &:hover {
-          background-color: #1141a0;
+          background-color: $dark-blue;
         }
       }
     }

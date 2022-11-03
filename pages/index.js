@@ -250,7 +250,7 @@ function Home() {
           <img className={styles.heroImage} src="/login-page-graphic.png" />
         </section>
       </main>
-      <footer className={styles.footer}>&copy;2022 Brainstorm, Inc.</footer>
+
       {(signinModal || signupModal || forgotModal || verifyEmail) && (
         <Blackscreen />
       )}

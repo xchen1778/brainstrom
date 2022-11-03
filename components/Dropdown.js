@@ -9,33 +9,31 @@ import { setEmail } from "../store/email-slice";
 import { setVerifyEmail } from "../store/verifyEmail-slice";
 import { setLoadingPage } from "../store/loadingPage-slice";
 import styles from "../styles/Dropdown.module.scss";
-import Link from "next/link";
 
 function Dropdown({ isProfile }) {
   const dispatch = useDispatch();
   const route = useRouter();
   return (
     <div className={styles.dropdown}>
-      <Link
-        href={{
-          pathname: "/profile",
-          query: { userIdentification: window.localStorage.getItem("userId") },
-        }}
+      <button
+        className={`${styles.dropdownButton} ${
+          isProfile ? styles.profileButton : ""
+        }`}
+        disabled={isProfile}
         onClick={() => {
           if (!isProfile) {
             dispatch(setLoadingPage(true));
+            route.push({
+              pathname: "/profile",
+              query: {
+                uId: window.localStorage.getItem("userId"),
+              },
+            });
           }
         }}
       >
-        <button
-          className={`${styles.dropdownButton} ${
-            isProfile ? styles.profileButton : ""
-          }`}
-          disabled={isProfile}
-        >
-          Profile
-        </button>
-      </Link>
+        Profile
+      </button>
       <button
         className={styles.dropdownButton}
         onClick={() => {
@@ -47,6 +45,8 @@ function Dropdown({ isProfile }) {
           dispatch(setResetModal(false));
           dispatch(setVerifyEmail(false));
           dispatch(setEmail(""));
+          isProfile && dispatch(setLoadingPage(true));
+          isProfile && route.push("/");
         }}
       >
         Sign out

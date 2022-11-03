@@ -5,8 +5,8 @@
   right: 3rem;
   bottom: 2rem;
   font-size: 2rem;
-  color: white;
-  background-color: #206bff;
+  color: $white;
+  background-color: $blue;
   padding: 0.8rem;
   border-radius: 5em;
   box-shadow: 0 1px 12px rgb(0 0 0 / 5%);
@@ -16,6 +16,6 @@
   transition: background-color 300ms ease;
 
   &:hover {
-    background-color: #1141a0;
+    background-color: $dark-blue;
   }
 }

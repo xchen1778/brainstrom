@@ -26,6 +26,11 @@ import {
   limit,
   updateDoc,
 } from "firebase/firestore";
+import {
+  EmailAuthProvider,
+  reauthenticateWithCredential,
+  updatePassword,
+} from "firebase/auth";
 import Idea from "../components/Idea";
 import { deleteUser, updateEmail, updateProfile } from "firebase/auth";
 import Blackscreen from "../components/Blackscreen";
@@ -33,13 +38,14 @@ import styles from "../styles/Profile.module.scss";
 import { HiArrowLeft } from "react-icons/hi";
 import { FaGoogle, FaFacebookF, FaTwitter, FaGithub } from "react-icons/fa";
 import { FaRegEdit } from "react-icons/fa";
-import { RiDeleteBinLine } from "react-icons/ri";
+import { RiLockPasswordLine, RiDeleteBinLine } from "react-icons/ri";
 import { animated, useTransition } from "react-spring";
 import loader from "../public/loader.json";
 import Lottie from "lottie-react";
 import { setScrollUp } from "../store/scrollUp-slice";
 import NoData from "../components/NoData";
 import { IoCamera } from "react-icons/io5";
+import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 import { storage } from "../utils/firebase";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
@@ -63,22 +69,29 @@ function Profile() {
   const route = useRouter();
   const dispatch = useDispatch();
   const loadingPage = useSelector((store) => store.loadingPage);
-  const transitionDelete = useTransition(deleteOn, {
-    from: { opacity: 0 },
-    enter: { opacity: 1 },
-    leave: { opacity: 0 },
-  });
   const [loadingIcon, setLoadingIcon] = useState(false);
   const [loadingIdeaIcon, setLoadingIdeaIcon] = useState(false);
   const [showChangeProfile, setShowChangeProfile] = useState(false);
-  const scrollUp = useSelector((store) => store.scrollUp);
+  const [editPasswordOn, setEditPasswordOn] = useState(false);
+  const [oldPassword, setOldPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [newPasswordAgain, setNewPasswordAgain] = useState("");
+  const [oldPasswordShown, setOldPasswordShown] = useState(false);
+  const [newPasswordShown, setNewPasswordShown] = useState(false);
+  const [newPasswordAgainShown, setNewPasswordAgainShown] = useState(false);
 
-  useEffect(() => {
-    if (!user && !loading) {
-      route.push("/");
-      dispatch(setLoadingPage(true));
-    }
-  }, [user, loading]);
+  const scrollUp = useSelector((store) => store.scrollUp);
+  const { uId, uName, uPic } = route.query;
+  const transitionDelete = useTransition(deleteOn, {
+    from: { opacity: 1 },
+    enter: { opacity: 1 },
+    leave: { opacity: 0 },
+  });
+  const transitionPassword = useTransition(editPasswordOn, {
+    from: { opacity: 1 },
+    enter: { opacity: 1 },
+    leave: { opacity: 0 },
+  });
 
   useEffect(() => {
     getFirstMyIdeas();
@@ -114,7 +127,7 @@ function Profile() {
     const q = query(
       ideasRef,
       orderBy("timestamp", "desc"),
-      where("userId", "==", window.localStorage.getItem("userId")),
+      where("userId", "==", uId),
       limit(10)
     );
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
@@ -132,7 +145,7 @@ function Profile() {
       const q = query(
         ideasRef,
         orderBy("timestamp", "desc"),
-        where("userId", "==", window.localStorage.getItem("userId")),
+        where("userId", "==", uId),
         startAfter(latestMyIdeas),
         limit(10)
       );
@@ -160,11 +173,7 @@ function Profile() {
       setLikedIdeas(
         querySnapshot.docs
           .map((doc) => ({ ...doc.data(), id: doc.id }))
-          .filter((idea) =>
-            idea.likes.some(
-              (like) => like === window.localStorage.getItem("userId")
-            )
-          )
+          .filter((idea) => idea.likes.some((like) => like === uId))
       );
     });
     return unsubscribe;
@@ -175,7 +184,7 @@ function Profile() {
     const q = query(
       commentsRef,
       orderBy("timestamp", "desc"),
-      where("userId", "==", window.localStorage.getItem("userId"))
+      where("userId", "==", uId)
     );
     const querySnapshot = await getDocs(q);
     const allCommentedIdeas = Array.from(
@@ -272,10 +281,7 @@ function Profile() {
 
         //find all ideas and change the displayName
         const ideasRef = collection(db, "ideas");
-        const q1 = query(
-          ideasRef,
-          where("userId", "==", window.localStorage.getItem("userId"))
-        );
+        const q1 = query(ideasRef, where("userId", "==", uId));
         const ideasSnap = await getDocs(q1);
         ideasSnap.forEach(async (idea) => {
           await updateDoc(doc(db, "ideas", idea.id), {
@@ -285,10 +291,7 @@ function Profile() {
 
         //find all comments and change the displayName
         const commentsRef = collection(db, "comments");
-        const q2 = query(
-          commentsRef,
-          where("userId", "==", window.localStorage.getItem("userId"))
-        );
+        const q2 = query(commentsRef, where("userId", "==", uId));
         const commentsSnap = await getDocs(q2);
         commentsSnap.forEach(async (comment) => {
           await updateDoc(doc(db, "comments", comment.id), {
@@ -358,6 +361,41 @@ function Profile() {
     }
   }
 
+  async function handleChangePassword(e) {
+    e.preventDefault();
+    if (newPassword !== newPasswordAgain) {
+      errorModal("Two new passwords do not match.");
+    } else {
+      try {
+        const credential = EmailAuthProvider.credential(
+          user.email,
+          oldPassword
+        );
+        await reauthenticateWithCredential(user, credential);
+        await updatePassword(user, newPassword);
+        setEditPasswordOn(false);
+        setTimeout(() => {
+          setOldPassword("");
+          setOldPasswordShown(false);
+          setNewPassword("");
+          setNewPasswordShown(false);
+          setNewPasswordAgain("");
+          setNewPasswordAgainShown(false);
+        }, 300);
+      } catch (error) {
+        console.log(error);
+        switch (error.code) {
+          case "auth/weak-password":
+            errorModal("Password entered does not meet the requirement.");
+            break;
+          case "auth/wrong-password":
+            errorModal("Wrong password. Please try again.");
+            break;
+        }
+      }
+    }
+  }
+
   return (
     <div
       className={styles.profilePage}
@@ -383,127 +421,293 @@ function Profile() {
               Dashboard
             </span>
           </div>
-
-          <div className={styles.userInfo}>
-            <div
-              className={styles.userProfile}
-              onMouseEnter={() => {
-                signInViaEmail && setShowChangeProfile(true);
-              }}
-              onMouseLeave={() => {
-                signInViaEmail && setShowChangeProfile(false);
-              }}
-            >
-              <img src={user?.photoURL} className={styles.userProfilePic} />
-              {signInViaEmail && (
-                <div
-                  className={`${styles.userChangeProfile} ${
-                    showChangeProfile ? styles.userShowChangeProfile : ""
-                  }`}
-                >
-                  <IoCamera className={styles.imageIcon} />
+          {uId === user?.uid ? (
+            <div className={styles.userInfo}>
+              <div
+                className={styles.userProfile}
+                onMouseEnter={() => {
+                  signInViaEmail && setShowChangeProfile(true);
+                }}
+                onMouseLeave={() => {
+                  signInViaEmail && setShowChangeProfile(false);
+                }}
+              >
+                <img src={user?.photoURL} className={styles.userProfilePic} />
+                {signInViaEmail && (
+                  <div
+                    className={`${styles.userChangeProfile} ${
+                      showChangeProfile ? styles.userShowChangeProfile : ""
+                    }`}
+                  >
+                    <IoCamera className={styles.imageIcon} />
+                    <input
+                      accept="image/*"
+                      type="file"
+                      title=""
+                      className={styles.imageInput}
+                      onChange={handleChange}
+                    />
+                  </div>
+                )}
+              </div>
+              {editOn ? (
+                <form className={styles.changeForm}>
                   <input
-                    accept="image/*"
-                    type="file"
-                    title=""
-                    className={styles.imageInput}
-                    onChange={handleChange}
+                    className={styles.changeName}
+                    type="text"
+                    placeholder="Name"
+                    value={changeName}
+                    onChange={(e) => setChangeName(e.target.value)}
+                    id="changeName"
                   />
-                </div>
-              )}
-            </div>
-            {editOn ? (
-              <form className={styles.changeForm}>
-                <input
-                  className={styles.changeName}
-                  type="text"
-                  placeholder="Name"
-                  value={changeName}
-                  onChange={(e) => setChangeName(e.target.value)}
-                  id="changeName"
-                />
-                <input
-                  className={styles.changeEmail}
-                  type="text"
-                  placeholder="Email"
-                  value={changeEmail}
-                  onChange={(e) => setChangeEmail(e.target.value)}
-                />
-                <div className={styles.changeButtons}>
-                  <button
-                    className={styles.doneButton}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      handleUpdate();
-                    }}
-                  >
-                    Done
-                  </button>
-                  <button
-                    className={styles.cancelButton}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setEditOn(false);
-                    }}
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </form>
-            ) : (
-              <div>
-                <h3 className={styles.userName}>{user?.displayName}</h3>
-                {signInViaEmail ? (
-                  <>
-                    <p className={styles.userEmail}>{user?.email}</p>
+                  <input
+                    className={styles.changeEmail}
+                    type="text"
+                    placeholder="Email"
+                    value={changeEmail}
+                    onChange={(e) => setChangeEmail(e.target.value)}
+                  />
+                  <div className={styles.changeButtons}>
                     <button
-                      className={styles.userEditButton}
-                      onClick={() => {
-                        setEditOn(true);
-                        setChangeName(user.displayName);
-                        setChangeEmail(user.email);
+                      className={styles.doneButton}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleUpdate();
                       }}
                     >
-                      <FaRegEdit />
+                      Done
                     </button>
-                  </>
-                ) : (
-                  determineService(user?.photoURL)
-                )}
-                <button
-                  className={`${styles.userDeleteButton} ${
-                    signInViaEmail ? styles.buttonLeftSpace : ""
-                  }`}
-                  onClick={() => setDeleteOn(true)}
-                >
-                  <RiDeleteBinLine />
-                </button>
-              </div>
-            )}
-
-            {transitionDelete(
-              (style, item) =>
-                item && (
-                  <animated.div style={style}>
-                    <Blackscreen />
-                    <div className={styles.deleteModal}>
-                      <h4 className={styles.deleteTitle}>
-                        Do you want to delete your account?
-                      </h4>
-                      <div className={styles.deleteButtons}>
+                    <button
+                      className={styles.cancelButton}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setEditOn(false);
+                      }}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </form>
+              ) : (
+                <div>
+                  <h3 className={styles.userName}>{user?.displayName}</h3>
+                  {signInViaEmail ? (
+                    <>
+                      <p className={styles.userEmail}>{user?.email}</p>
+                      <div className={styles.userButtons}>
                         <button
-                          className={styles.deleteButton}
-                          onClick={() => handleDelete()}
+                          className={styles.userEditButton}
+                          onClick={() => {
+                            setEditOn(true);
+                            setChangeName(user.displayName);
+                            setChangeEmail(user.email);
+                          }}
                         >
-                          Yes
+                          <FaRegEdit />
                         </button>
-                        <button onClick={() => setDeleteOn(false)}>No</button>
+
+                        <button
+                          className={styles.userPasswordButton}
+                          onClick={() => setEditPasswordOn(true)}
+                        >
+                          <RiLockPasswordLine />
+                        </button>
                       </div>
-                    </div>
-                  </animated.div>
-                )
-            )}
-          </div>
+                    </>
+                  ) : (
+                    determineService(user?.photoURL)
+                  )}
+                  <button
+                    className={`${styles.userDeleteButton} ${
+                      signInViaEmail ? styles.buttonLeftSpace : ""
+                    }`}
+                    onClick={() => setDeleteOn(true)}
+                  >
+                    <RiDeleteBinLine />
+                  </button>
+                </div>
+              )}
+
+              {(deleteOn || editPasswordOn) && <Blackscreen />}
+
+              {transitionDelete(
+                (style, item) =>
+                  item && (
+                    <animated.div style={style}>
+                      <div className={styles.deleteModal}>
+                        <h4 className={styles.deleteTitle}>
+                          Do you want to delete your account?
+                        </h4>
+                        <div className={styles.deleteButtons}>
+                          <button
+                            className={styles.deleteButton}
+                            onClick={handleDelete}
+                          >
+                            Yes
+                          </button>
+                          <button onClick={() => setDeleteOn(false)}>No</button>
+                        </div>
+                      </div>
+                    </animated.div>
+                  )
+              )}
+
+              {transitionPassword(
+                (style, item) =>
+                  item && (
+                    <animated.div style={style}>
+                      <div className={styles.changePasswordModal}>
+                        <h4 className={styles.changePasswordTitle}>
+                          Let's change your password
+                        </h4>
+                        <form className={styles.changePasswordForm}>
+                          <div className={styles.passwordInput}>
+                            <input
+                              type="password"
+                              placeholder="Old Password"
+                              value={oldPassword}
+                              onChange={(e) => {
+                                setOldPassword(e.target.value);
+                              }}
+                              id="oldPassword"
+                            />
+                            <label htmlFor="oldPassword">Old Password</label>
+                            {oldPasswordShown ? (
+                              <div
+                                className={styles.passwordShowIcon}
+                                onClick={() => {
+                                  setOldPasswordShown(false);
+                                  document.querySelector("#oldPassword").type =
+                                    "password";
+                                }}
+                              >
+                                <AiFillEyeInvisible />
+                              </div>
+                            ) : (
+                              <div
+                                className={styles.passwordShowIcon}
+                                onClick={() => {
+                                  setOldPasswordShown(true);
+                                  document.querySelector("#oldPassword").type =
+                                    "text";
+                                }}
+                              >
+                                <AiFillEye />
+                              </div>
+                            )}
+                          </div>
+                          <div className={styles.passwordInput}>
+                            <input
+                              type="password"
+                              placeholder="New Password"
+                              value={newPassword}
+                              onChange={(e) => {
+                                setNewPassword(e.target.value);
+                              }}
+                              id="newPassword"
+                            />
+                            <label htmlFor="newPassword">New Password</label>
+                            {newPasswordShown ? (
+                              <div
+                                className={styles.passwordShowIcon}
+                                onClick={() => {
+                                  setNewPasswordShown(false);
+                                  document.querySelector("#newPassword").type =
+                                    "password";
+                                }}
+                              >
+                                <AiFillEyeInvisible />
+                              </div>
+                            ) : (
+                              <div
+                                className={styles.passwordShowIcon}
+                                onClick={() => {
+                                  setNewPasswordShown(true);
+                                  document.querySelector("#newPassword").type =
+                                    "text";
+                                }}
+                              >
+                                <AiFillEye />
+                              </div>
+                            )}
+                          </div>
+                          <div className={styles.passwordInput}>
+                            <input
+                              type="password"
+                              placeholder="Confirm New Password"
+                              value={newPasswordAgain}
+                              onChange={(e) => {
+                                setNewPasswordAgain(e.target.value);
+                              }}
+                              id="newPasswordAgain"
+                            />
+                            <label htmlFor="newPasswordAgain">
+                              Confirm New Password
+                            </label>
+                            {newPasswordAgainShown ? (
+                              <div
+                                className={styles.passwordShowIcon}
+                                onClick={() => {
+                                  setNewPasswordAgainShown(false);
+                                  document.querySelector(
+                                    "#newPasswordAgain"
+                                  ).type = "password";
+                                }}
+                              >
+                                <AiFillEyeInvisible />
+                              </div>
+                            ) : (
+                              <div
+                                className={styles.passwordShowIcon}
+                                onClick={() => {
+                                  setNewPasswordAgainShown(true);
+                                  document.querySelector(
+                                    "#newPasswordAgain"
+                                  ).type = "text";
+                                }}
+                              >
+                                <AiFillEye />
+                              </div>
+                            )}
+                          </div>
+                          <p>*Password must be at least 6 characters.</p>
+
+                          <div className={styles.passwordButtons}>
+                            <button onClick={handleChangePassword}>
+                              Confirm
+                            </button>
+                            <button
+                              className={styles.cancelButton}
+                              onClick={(e) => {
+                                e.preventDefault();
+                                setEditPasswordOn(false);
+                                setTimeout(() => {
+                                  setOldPassword("");
+                                  setOldPasswordShown(false);
+                                  setNewPassword("");
+                                  setNewPasswordShown(false);
+                                  setNewPasswordAgain("");
+                                  setNewPasswordAgainShown(false);
+                                }, 300);
+                              }}
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        </form>
+                      </div>
+                    </animated.div>
+                  )
+              )}
+            </div>
+          ) : (
+            <div className={styles.userInfo}>
+              <div className={styles.userProfile}>
+                <img src={uPic} className={styles.userProfilePic} />
+              </div>
+              <h3 className={styles.userName}>{uName}</h3>
+            </div>
+          )}
         </section>
         <hr className={styles.sectionLine} />
         <section className={styles.ideasSection}>
@@ -547,7 +751,7 @@ function Profile() {
               (myIdeas.length ? (
                 myIdeas.map((idea) => (
                   <div key={idea.id} className={styles.idea}>
-                    <Idea {...idea} profilePage={true} />
+                    <Idea {...idea} profilePage={true} viewer={uId} />
                   </div>
                 ))
               ) : loadingIcon ? (
@@ -559,7 +763,7 @@ function Profile() {
               (likedIdeas.length ? (
                 likedIdeas.slice(0, amountLikedIdeas).map((idea) => (
                   <div key={idea.id} className={styles.idea}>
-                    <Idea {...idea} profilePage={true} />
+                    <Idea {...idea} profilePage={true} viewer={uId} />
                   </div>
                 ))
               ) : loadingIcon ? (
@@ -571,7 +775,7 @@ function Profile() {
               (commentedIdeas.length ? (
                 commentedIdeas.slice(0, amountCommentedIdeas).map((idea) => (
                   <div key={idea.id} className={styles.idea}>
-                    <Idea {...idea} profilePage={true} />
+                    <Idea {...idea} profilePage={true} viewer={uId} />
                   </div>
                 ))
               ) : loadingIcon ? (

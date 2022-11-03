@@ -16,6 +16,7 @@ import { FaRegHeart, FaHeart, FaRegEdit } from "react-icons/fa";
 import { RiDeleteBinLine } from "react-icons/ri";
 import { useRouter } from "next/router";
 import Blackscreen from "./Blackscreen";
+import Link from "next/link";
 
 function Comment({
   comment,
@@ -89,32 +90,50 @@ function Comment({
 
   return (
     <div className={styles.comment}>
-      <div className={styles.userInfo}>
-        <img src={photoURL} className={styles.userPhoto} />
-        <div>
-          <h3>{displayName}</h3>
-          <p className={styles.commentTime}>
-            <span>
-              {(timestamp
-                ? new Date(timestamp.seconds * 1000)
-                : new Date()
-              ).toLocaleDateString("en-US")}
-            </span>
-            {"  "}
-            <span>
-              {(timestamp
-                ? new Date(timestamp.seconds * 1000)
-                : new Date()
-              ).toLocaleTimeString([], {
-                hour: "2-digit",
-                minute: "2-digit",
-              })}
-            </span>
-            {"  "}
-            {edited && <span>edited</span>}
-          </p>
+      <Link
+        href={{
+          pathname: "/profile",
+          query: {
+            uId: userId,
+            uName: displayName,
+            uPic: photoURL,
+          },
+        }}
+      >
+        <div
+          className={styles.userInfo}
+          onClick={() => {
+            dispatch(setLoadingPage(true));
+          }}
+        >
+          <div className={styles.userPhotoSection}>
+            <img src={photoURL} className={styles.userPhoto} />
+          </div>
+          <div>
+            <h3 className={styles.userName}>{displayName}</h3>
+            <p className={styles.commentTime}>
+              <span>
+                {(timestamp
+                  ? new Date(timestamp.seconds * 1000)
+                  : new Date()
+                ).toLocaleDateString("en-US")}
+              </span>
+              {"  "}
+              <span>
+                {(timestamp
+                  ? new Date(timestamp.seconds * 1000)
+                  : new Date()
+                ).toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
+              </span>
+              {"  "}
+              {edited && <span>edited</span>}
+            </p>
+          </div>
         </div>
-      </div>
+      </Link>
 
       {editOn ? (
         <EditComment comment={comment} id={id} setEditOn={setEditOn} />
