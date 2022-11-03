@@ -17,14 +17,26 @@ function Dropdown({ isProfile }) {
     <div className={styles.dropdown}>
       <button
         className={`${styles.dropdownButton} ${
-          isProfile ? styles.profileButton : ""
+          isProfile &&
+          window.localStorage.getItem("uId") ===
+            window.localStorage.getItem("userId")
+            ? styles.profileButton
+            : ""
         }`}
-        disabled={isProfile}
+        disabled={
+          isProfile &&
+          window.localStorage.getItem("uId") ===
+            window.localStorage.getItem("userId")
+        }
         onClick={() => {
-          if (!isProfile) {
+          if (
+            !isProfile ||
+            window.localStorage.getItem("uId") !==
+              window.localStorage.getItem("userId")
+          ) {
             dispatch(setLoadingPage(true));
             route.push({
-              pathname: "/profile",
+              pathname: "/loading",
               query: {
                 uId: window.localStorage.getItem("userId"),
               },

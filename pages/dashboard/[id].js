@@ -34,6 +34,7 @@ function IdeaDetails({ id }) {
   const [isAuthor, setIsAuthor] = useState(false);
 
   useEffect(() => {
+    window.localStorage.setItem("uId", undefined);
     dispatch(setScrollUp(false));
     async function getThisIdea() {
       const ideaRef = doc(db, "ideas", id);

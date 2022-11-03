@@ -124,6 +124,7 @@ function Dashboard() {
   }, [user, loading]);
 
   useEffect(() => {
+    window.localStorage.setItem("uId", undefined);
     dispatch(setLoadingPage(false));
     dispatch(setScrollUp(false));
     getFirstIdeas();

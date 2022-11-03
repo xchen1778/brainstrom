@@ -7,11 +7,12 @@ import styles from "../styles/NotFound.module.scss";
 function NotFound() {
   const route = useRouter();
 
-  //   useEffect(() => {
-  //     setTimeout(() => {
-  //       route.back();
-  //     }, 1000);
-  //   }, []);
+  useEffect(() => {
+    window.localStorage.setItem("uId", undefined);
+    setTimeout(() => {
+      route.back();
+    }, 1000);
+  }, []);
 
   return (
     <div className={styles.notFoundPage}>

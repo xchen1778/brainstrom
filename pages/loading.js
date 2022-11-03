@@ -2,12 +2,13 @@ import { useRouter } from "next/router";
 import { useEffect } from "react";
 import Loading from "../components/Loading";
 
-function loading() {
+function LoadingPage() {
   const route = useRouter();
   const { uId, uName, uPic } = route.query;
 
   useEffect(() => {
-    if (uId && uName && uPic) {
+    window.localStorage.setItem("uId", undefined);
+    if (uId) {
       setTimeout(() => {
         route.push({
           pathname: "/profile",
@@ -20,4 +21,4 @@ function loading() {
   return <Loading />;
 }
 
-export default loading;
+export default LoadingPage;

@@ -96,6 +96,9 @@ function Profile() {
   });
 
   useEffect(() => {
+    if (window.localStorage.getItem("uId") === "undefined") {
+      window.localStorage.setItem("uId", uId);
+    }
     getFirstMyIdeas();
     getLikedIdeas();
     getCommentedIdeas();
@@ -129,7 +132,7 @@ function Profile() {
     const q = query(
       ideasRef,
       orderBy("timestamp", "desc"),
-      where("userId", "==", uId),
+      where("userId", "==", uId || window.localStorage.getItem("uId")),
       limit(10)
     );
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
@@ -147,7 +150,7 @@ function Profile() {
       const q = query(
         ideasRef,
         orderBy("timestamp", "desc"),
-        where("userId", "==", uId),
+        where("userId", "==", uId || window.localStorage.getItem("uId")),
         startAfter(latestMyIdeas),
         limit(10)
       );
@@ -175,7 +178,11 @@ function Profile() {
       setLikedIdeas(
         querySnapshot.docs
           .map((doc) => ({ ...doc.data(), id: doc.id }))
-          .filter((idea) => idea.likes.some((like) => like === uId))
+          .filter((idea) =>
+            idea.likes.some(
+              (like) => like === uId || window.localStorage.getItem("uId")
+            )
+          )
       );
     });
     return unsubscribe;
@@ -186,7 +193,7 @@ function Profile() {
     const q = query(
       commentsRef,
       orderBy("timestamp", "desc"),
-      where("userId", "==", uId)
+      where("userId", "==", uId || window.localStorage.getItem("uId"))
     );
     const querySnapshot = await getDocs(q);
     const allCommentedIdeas = Array.from(
@@ -283,7 +290,10 @@ function Profile() {
 
         //find all ideas and change the displayName
         const ideasRef = collection(db, "ideas");
-        const q1 = query(ideasRef, where("userId", "==", uId));
+        const q1 = query(
+          ideasRef,
+          where("userId", "==", uId || window.localStorage.getItem("uId"))
+        );
         const ideasSnap = await getDocs(q1);
         ideasSnap.forEach(async (idea) => {
           await updateDoc(doc(db, "ideas", idea.id), {
@@ -293,7 +303,10 @@ function Profile() {
 
         //find all comments and change the displayName
         const commentsRef = collection(db, "comments");
-        const q2 = query(commentsRef, where("userId", "==", uId));
+        const q2 = query(
+          commentsRef,
+          where("userId", "==", uId || window.localStorage.getItem("uId"))
+        );
         const commentsSnap = await getDocs(q2);
         commentsSnap.forEach(async (comment) => {
           await updateDoc(doc(db, "comments", comment.id), {
@@ -568,7 +581,7 @@ function Profile() {
                     <animated.div style={style}>
                       <div className={styles.changePasswordModal}>
                         <h4 className={styles.changePasswordTitle}>
-                          Let's change your password
+                          Let&apos;s change your password
                         </h4>
                         <form className={styles.changePasswordForm}>
                           <div className={styles.passwordInput}>
@@ -768,7 +781,11 @@ function Profile() {
               (myIdeas.length ? (
                 myIdeas.map((idea) => (
                   <div key={idea.id} className={styles.idea}>
-                    <Idea {...idea} profilePage={true} viewer={uId} />
+                    <Idea
+                      {...idea}
+                      profilePage={true}
+                      viewer={uId || window.localStorage.getItem("uId")}
+                    />
                   </div>
                 ))
               ) : loadingIcon ? (
@@ -780,7 +797,11 @@ function Profile() {
               (likedIdeas.length ? (
                 likedIdeas.slice(0, amountLikedIdeas).map((idea) => (
                   <div key={idea.id} className={styles.idea}>
-                    <Idea {...idea} profilePage={true} viewer={uId} />
+                    <Idea
+                      {...idea}
+                      profilePage={true}
+                      viewer={uId || window.localStorage.getItem("uId")}
+                    />
                   </div>
                 ))
               ) : loadingIcon ? (
@@ -792,7 +813,11 @@ function Profile() {
               (commentedIdeas.length ? (
                 commentedIdeas.slice(0, amountCommentedIdeas).map((idea) => (
                   <div key={idea.id} className={styles.idea}>
-                    <Idea {...idea} profilePage={true} viewer={uId} />
+                    <Idea
+                      {...idea}
+                      profilePage={true}
+                      viewer={uId || window.localStorage.getItem("uId")}
+                    />
                   </div>
                 ))
               ) : loadingIcon ? (

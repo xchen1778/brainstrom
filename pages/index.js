@@ -95,6 +95,7 @@ function Home() {
         }
       }
     }
+    window.localStorage.setItem("uId", undefined);
     signInEmailLink();
     dispatch(setLoadingPage(true));
   }, []);
