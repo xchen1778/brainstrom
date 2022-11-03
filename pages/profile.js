@@ -362,6 +362,7 @@ function Profile() {
       errorModal("The image file is too big.");
       return;
     } else {
+      dispatch(setLoadingPage(true));
       const imageRef = ref(
         storage,
         `profiles/${window.localStorage.getItem("userId")})`
@@ -371,8 +372,12 @@ function Profile() {
       updateProfile(auth.currentUser, {
         photoURL: url,
       });
-      dispatch(setLoadingPage(true));
-      window.location.reload(false);
+      route.push({
+        pathname: "/loading",
+        query: {
+          uId: window.localStorage.getItem("userId"),
+        },
+      });
     }
   }
 
