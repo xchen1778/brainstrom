@@ -41,6 +41,7 @@ import { FaRegEdit } from "react-icons/fa";
 import { RiLockPasswordLine, RiDeleteBinLine } from "react-icons/ri";
 import { animated, useTransition } from "react-spring";
 import loader from "../public/loader.json";
+import uploading from "../public/uploading.json";
 import Lottie from "lottie-react";
 import { setScrollUp } from "../store/scrollUp-slice";
 import NoData from "../components/NoData";
@@ -72,6 +73,7 @@ function Profile() {
   const [loadingIcon, setLoadingIcon] = useState(false);
   const [loadingIdeaIcon, setLoadingIdeaIcon] = useState(false);
   const [showChangeProfile, setShowChangeProfile] = useState(false);
+  const [doneIconOn, setDoneIconOn] = useState(false);
   const [editPasswordOn, setEditPasswordOn] = useState(false);
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -79,7 +81,7 @@ function Profile() {
   const [oldPasswordShown, setOldPasswordShown] = useState(false);
   const [newPasswordShown, setNewPasswordShown] = useState(false);
   const [newPasswordAgainShown, setNewPasswordAgainShown] = useState(false);
-
+  const [confirmIconOn, setConfirmIconOn] = useState(false);
   const scrollUp = useSelector((store) => store.scrollUp);
   const { uId, uName, uPic } = route.query;
   const transitionDelete = useTransition(deleteOn, {
@@ -271,12 +273,12 @@ function Profile() {
   }
 
   async function handleUpdate() {
-    console.log("run");
     try {
       if (changeName.trim().length === 0) {
         errorModal("Sorry, name can't be empty.");
         throw "Sorry, name can't be empty.";
       } else if (changeName !== user.displayName) {
+        setDoneIconOn(true);
         await updateProfile(auth.currentUser, { displayName: changeName });
 
         //find all ideas and change the displayName
@@ -298,13 +300,13 @@ function Profile() {
             displayName: changeName,
           });
         });
+        setDoneIconOn(false);
       }
       if (changeEmail !== user.email) {
         await updateEmail(auth.currentUser, changeEmail);
       }
       setEditOn(false);
     } catch (error) {
-      console.log(error);
       switch (error.code) {
         case "auth/email-already-in-use":
           errorModal("There is already an account with this email address.");
@@ -367,6 +369,7 @@ function Profile() {
       errorModal("Two new passwords do not match.");
     } else {
       try {
+        setConfirmIconOn(true);
         const credential = EmailAuthProvider.credential(
           user.email,
           oldPassword
@@ -382,8 +385,8 @@ function Profile() {
           setNewPasswordAgain("");
           setNewPasswordAgainShown(false);
         }, 300);
+        setConfirmIconOn(false);
       } catch (error) {
-        console.log(error);
         switch (error.code) {
           case "auth/weak-password":
             errorModal("Password entered does not meet the requirement.");
@@ -475,7 +478,14 @@ function Profile() {
                         handleUpdate();
                       }}
                     >
-                      Done
+                      {doneIconOn ? (
+                        <Lottie
+                          animationData={uploading}
+                          className={styles.uploading}
+                        />
+                      ) : (
+                        "Done"
+                      )}
                     </button>
                     <button
                       className={styles.cancelButton}
@@ -674,7 +684,14 @@ function Profile() {
 
                           <div className={styles.passwordButtons}>
                             <button onClick={handleChangePassword}>
-                              Confirm
+                              {confirmIconOn ? (
+                                <Lottie
+                                  animationData={uploading}
+                                  className={styles.uploading}
+                                />
+                              ) : (
+                                "Confirm"
+                              )}
                             </button>
                             <button
                               className={styles.cancelButton}

@@ -66,8 +66,6 @@ function Idea({
   });
 
   useEffect(() => {
-    console.log("viewer", viewer);
-    console.log("userId", userId);
     getAllComments();
     liked();
   }, []);
