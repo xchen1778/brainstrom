@@ -87,48 +87,49 @@
       color: $red;
     }
   }
+}
 
-  .deleteModal {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: $gray-200;
-    padding: 3rem;
-    border-radius: 1rem;
-    max-width: 30rem;
-    width: 90%;
-    z-index: 20;
+.deleteModal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: $gray-200;
+  padding: 3rem;
+  border-radius: 1rem;
+  max-width: 30rem;
+  width: 90%;
+  z-index: 20 !important;
+  animation: fade 300ms ease;
 
-    .deleteTitle {
-      font-family: $header;
-      font-size: 1.5rem;
-      text-align: center;
-      line-height: 1.2em;
+  .deleteTitle {
+    font-family: $header;
+    font-size: 1.5rem;
+    text-align: center;
+    line-height: 1.2em;
+  }
+  .deleteButtons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 1.5rem;
+
+    button {
+      color: $white;
+      background-color: $blue;
+      padding: 0.8rem;
+      border-radius: 2rem;
+      width: 5rem;
+      align-self: center;
+      transition: background-color 300ms ease;
+      cursor: pointer;
+
+      &:hover {
+        background-color: $dark-blue;
+      }
     }
-    .deleteButtons {
-      display: flex;
-      justify-content: center;
-      gap: 1rem;
-      margin-top: 1.5rem;
-
-      button {
-        color: $white;
-        background-color: $blue;
-        padding: 0.8rem;
-        border-radius: 2rem;
-        width: 5rem;
-        align-self: center;
-        transition: background-color 300ms ease;
-        cursor: pointer;
-
-        &:hover {
-          background-color: $dark-blue;
-        }
-      }
-      .deleteButton {
-        background-color: $gray-500;
-      }
+    .deleteButton {
+      background-color: $gray-500;
     }
   }
 }

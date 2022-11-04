@@ -149,7 +149,7 @@ function Dashboard() {
 
   async function getFirstIdeas() {
     const ideasRef = collection(db, "ideas");
-    const q = query(ideasRef, orderBy("timestamp", "desc"), limit(10));
+    const q = query(ideasRef, orderBy("timestamp", "desc"), limit(5));
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       setAllIdeas(
         querySnapshot.docs.map((doc) => ({
@@ -169,7 +169,7 @@ function Dashboard() {
         ideasRef,
         orderBy("timestamp", "desc"),
         startAfter(latestDoc),
-        limit(10)
+        limit(5)
       );
       const allLoadedIdeas = [];
       const unsubscribe = onSnapshot(q, (querySnapshot) => {
@@ -268,8 +268,13 @@ function Dashboard() {
             className={styles.postUser}
             src={user?.photoURL}
             onClick={() => {
-              route.push("/profile");
               dispatch(setLoadingPage(true));
+              route.push({
+                pathname: "/loading",
+                query: {
+                  uId: window.localStorage.getItem("userId"),
+                },
+              });
             }}
           />
           <div className={styles.postIdeaTextPicture}>

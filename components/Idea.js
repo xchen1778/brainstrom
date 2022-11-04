@@ -32,6 +32,7 @@ import { setLoadingPage } from "../store/loadingPage-slice";
 import Swiper from "../components/Swiper";
 import { animated, useTransition } from "react-spring";
 import { useAuthState } from "react-firebase-hooks/auth";
+import { errorModal } from "../functions/errorModal";
 
 function Idea({
   id,
@@ -60,6 +61,11 @@ function Idea({
   const route = useRouter();
   const dispatch = useDispatch();
   const transitionImages = useTransition(swiperOn, {
+    from: { opacity: 1 },
+    enter: { opacity: 1 },
+    leave: { opacity: 0 },
+  });
+  const transitionDeleteIdea = useTransition(deleteOn, {
     from: { opacity: 1 },
     enter: { opacity: 1 },
     leave: { opacity: 0 },
@@ -106,7 +112,7 @@ function Idea({
 
   async function handleLikes() {
     try {
-      if (window.localStorage.getItem("userId")) {
+      if (window.localStorage.getItem("userId") || user) {
         const ideaRef = doc(db, "ideas", id);
         const ideaSnap = await getDoc(ideaRef);
         const alreadyLiked = ideaSnap
@@ -126,8 +132,7 @@ function Idea({
           setAlreadyLiked(true);
         }
       } else {
-        route.push("/");
-        dispatch(setLoadingPage(true));
+        errorModal("Please sign in or sign up to like.");
       }
     } catch (error) {
       console.log(error);
@@ -322,24 +327,28 @@ function Idea({
           </div>
         </Link>
 
-        {deleteOn && (
-          <>
-            <Blackscreen />
-            <div className={styles.deleteModal}>
-              <h4 className={styles.deleteTitle}>
-                Do you want to delete this idea?
-              </h4>
-              <div className={styles.deleteButtons}>
-                <button
-                  className={styles.deleteButton}
-                  onClick={() => handleDelete(id)}
-                >
-                  Yes
-                </button>
-                <button onClick={() => setDeleteOn(false)}>No</button>
-              </div>
-            </div>
-          </>
+        {deleteOn && <Blackscreen />}
+
+        {transitionDeleteIdea(
+          (style, item) =>
+            item && (
+              <animated.div style={style}>
+                <div className={styles.deleteModal}>
+                  <h4 className={styles.deleteTitle}>
+                    Do you want to delete this idea?
+                  </h4>
+                  <div className={styles.deleteButtons}>
+                    <button
+                      className={styles.deleteButton}
+                      onClick={() => handleDelete(id)}
+                    >
+                      Yes
+                    </button>
+                    <button onClick={() => setDeleteOn(false)}>No</button>
+                  </div>
+                </div>
+              </animated.div>
+            )
         )}
 
         {editOn && (

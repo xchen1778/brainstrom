@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import EditComment from "./EditComment";
-import { db } from "../utils/firebase";
+import { db, auth } from "../utils/firebase";
+import { useAuthState } from "react-firebase-hooks/auth";
 import { useDispatch } from "react-redux";
 import { setLoadingPage } from "../store/loadingPage-slice";
 import {
@@ -16,7 +17,9 @@ import { FaRegHeart, FaHeart, FaRegEdit } from "react-icons/fa";
 import { RiDeleteBinLine } from "react-icons/ri";
 import { useRouter } from "next/router";
 import Blackscreen from "./Blackscreen";
+import { animated, useTransition } from "react-spring";
 import Link from "next/link";
+import { errorModal } from "../functions/errorModal";
 
 function Comment({
   comment,
@@ -29,12 +32,18 @@ function Comment({
   likes,
   numOfLikes,
 }) {
+  const [user, loading] = useAuthState(auth);
   const [deleteOn, setDeleteOn] = useState(false);
   const [editOn, setEditOn] = useState(false);
   const [alreadyLiked, setAlreadyLiked] = useState(false);
   const [fillHeart, setFillHeart] = useState(false);
   const route = useRouter();
   const dispatch = useDispatch();
+  const transitionDeleteComment = useTransition(deleteOn, {
+    from: { opacity: 1 },
+    enter: { opacity: 1 },
+    leave: { opacity: 0 },
+  });
 
   useEffect(() => {
     setAlreadyLiked(
@@ -56,7 +65,7 @@ function Comment({
 
   async function handleLikes() {
     try {
-      if (window.localStorage.getItem("userId")) {
+      if (window.localStorage.getItem("userId") || user) {
         const commentRef = doc(db, "comments", id);
         const commentSnap = await getDoc(commentRef);
         const alreadyLiked = commentSnap
@@ -80,8 +89,7 @@ function Comment({
           setAlreadyLiked(true);
         }
       } else {
-        route.push("/");
-        dispatch(setLoadingPage(true));
+        errorModal("Please sign in or sign up to like.");
       }
     } catch (error) {
       console.log(error);
@@ -89,92 +97,97 @@ function Comment({
   }
 
   return (
-    <div className={styles.comment}>
-      <Link
-        href={{
-          pathname: "/profile",
-          query: {
-            uId: userId,
-            uName: displayName,
-            uPic: photoURL,
-          },
-        }}
-      >
-        <div
-          className={styles.userInfo}
-          onClick={() => {
-            dispatch(setLoadingPage(true));
+    <>
+      <div className={styles.comment}>
+        <Link
+          href={{
+            pathname: "/profile",
+            query: {
+              uId: userId,
+              uName: displayName,
+              uPic: photoURL,
+            },
           }}
         >
-          <div className={styles.userPhotoSection}>
-            <img src={photoURL} className={styles.userPhoto} />
-          </div>
-          <div>
-            <h3 className={styles.userName}>{displayName}</h3>
-            <p className={styles.commentTime}>
-              <span>
-                {(timestamp
-                  ? new Date(timestamp.seconds * 1000)
-                  : new Date()
-                ).toLocaleDateString("en-US")}
-              </span>
-              {"  "}
-              <span>
-                {(timestamp
-                  ? new Date(timestamp.seconds * 1000)
-                  : new Date()
-                ).toLocaleTimeString([], {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })}
-              </span>
-              {"  "}
-              {edited && <span>edited</span>}
-            </p>
-          </div>
-        </div>
-      </Link>
-
-      {editOn ? (
-        <EditComment comment={comment} id={id} setEditOn={setEditOn} />
-      ) : (
-        <>
-          <div className={styles.commentContent}>
-            <p>{comment}</p>
-          </div>
-          {userId === window.localStorage.getItem("userId") && (
-            <div className={styles.commentActions}>
-              <button
-                className={styles.commentEditButton}
-                onClick={() => setEditOn(true)}
-              >
-                <FaRegEdit />
-              </button>
-              <button
-                className={styles.commentDeleteButton}
-                onClick={() => setDeleteOn(true)}
-              >
-                <RiDeleteBinLine />
-              </button>
-            </div>
-          )}
-          <button
-            onClick={handleLikes}
-            className={styles.commentLikeButton}
-            onMouseEnter={() => setFillHeart(true)}
-            onMouseLeave={() => setFillHeart(false)}
+          <div
+            className={styles.userInfo}
+            onClick={() => {
+              dispatch(setLoadingPage(true));
+            }}
           >
-            {fillHeart || alreadyLiked ? (
-              <FaHeart className={styles.fillHeart} />
-            ) : (
-              <FaRegHeart />
-            )}
-            {numOfLikes}{" "}
-          </button>
+            <div className={styles.userPhotoSection}>
+              <img src={photoURL} className={styles.userPhoto} />
+            </div>
+            <div>
+              <h3 className={styles.userName}>{displayName}</h3>
+              <p className={styles.commentTime}>
+                <span>
+                  {(timestamp
+                    ? new Date(timestamp.seconds * 1000)
+                    : new Date()
+                  ).toLocaleDateString("en-US")}
+                </span>
+                {"  "}
+                <span>
+                  {(timestamp
+                    ? new Date(timestamp.seconds * 1000)
+                    : new Date()
+                  ).toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                </span>
+                {"  "}
+                {edited && <span>edited</span>}
+              </p>
+            </div>
+          </div>
+        </Link>
 
-          {deleteOn && (
-            <>
-              <Blackscreen />
+        {editOn ? (
+          <EditComment comment={comment} id={id} setEditOn={setEditOn} />
+        ) : (
+          <>
+            <div className={styles.commentContent}>
+              <p>{comment}</p>
+            </div>
+            {userId === window.localStorage.getItem("userId") && (
+              <div className={styles.commentActions}>
+                <button
+                  className={styles.commentEditButton}
+                  onClick={() => setEditOn(true)}
+                >
+                  <FaRegEdit />
+                </button>
+                <button
+                  className={styles.commentDeleteButton}
+                  onClick={() => setDeleteOn(true)}
+                >
+                  <RiDeleteBinLine />
+                </button>
+              </div>
+            )}
+            <button
+              onClick={handleLikes}
+              className={styles.commentLikeButton}
+              onMouseEnter={() => setFillHeart(true)}
+              onMouseLeave={() => setFillHeart(false)}
+            >
+              {fillHeart || alreadyLiked ? (
+                <FaHeart className={styles.fillHeart} />
+              ) : (
+                <FaRegHeart />
+              )}
+              {numOfLikes}{" "}
+            </button>
+          </>
+        )}
+      </div>
+      {deleteOn && <Blackscreen />}
+      {transitionDeleteComment(
+        (style, item) =>
+          item && (
+            <animated.div style={style}>
               <div className={styles.deleteModal}>
                 <h4 className={styles.deleteTitle}>
                   Do you want to delete this comment?
@@ -189,11 +202,10 @@ function Comment({
                   <button onClick={() => setDeleteOn(false)}>No</button>
                 </div>
               </div>
-            </>
-          )}
-        </>
+            </animated.div>
+          )
       )}
-    </div>
+    </>
   );
 }
 

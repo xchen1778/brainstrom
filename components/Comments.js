@@ -35,7 +35,6 @@ function Comments({ id }) {
   const [submitIconOn, setSubmitIconOn] = useState(false);
   const route = useRouter();
   const dispatch = useDispatch();
-
   useEffect(() => {
     getComments();
     document.addEventListener("scroll", handleScroll);
@@ -213,8 +212,13 @@ function Comments({ id }) {
               className={styles.commentUser}
               src={user?.photoURL}
               onClick={() => {
-                route.push("/profile");
                 dispatch(setLoadingPage(true));
+                route.push({
+                  pathname: "/loading",
+                  query: {
+                    uId: window.localStorage.getItem("userId"),
+                  },
+                });
               }}
             />
             <textarea
@@ -227,6 +231,8 @@ function Comments({ id }) {
                 e.target.style.height = `${e.target.scrollHeight}px`;
                 if (!e.target.value) {
                   setShowSubmit(false);
+                } else {
+                  setShowSubmit(true);
                 }
               }}
               onFocus={() => {

@@ -8,7 +8,6 @@ body {
   font-family: "Poppins", sans-serif;
   font-weight: 500;
   color: #171f44;
-  user-select: none;
   scroll-behavior: smooth;
 }
 

@@ -7,7 +7,8 @@ import { setDropdown } from "../../store/dropdown-slice";
 import Nav from "../../components/Nav";
 import Head from "next/head";
 import Idea from "../../components/Idea";
-import { db } from "../../utils/firebase";
+import { db, auth } from "../../utils/firebase";
+import { useAuthState } from "react-firebase-hooks/auth";
 import Comments from "../../components/Comments";
 import {
   collection,
@@ -26,6 +27,7 @@ import { HiArrowLeft } from "react-icons/hi";
 import Loading from "../../components/Loading";
 
 function IdeaDetails({ id }) {
+  const [user, loading] = useAuthState(auth);
   const router = useRouter();
   const dispatch = useDispatch();
   const scrollUp = useSelector((store) => store.scrollUp);
@@ -57,6 +59,14 @@ function IdeaDetails({ id }) {
       }
     });
   }, []);
+
+  useEffect(() => {
+    if (thisIdea.userId === user?.uid) {
+      setIsAuthor(true);
+    } else {
+      setIsAuthor(false);
+    }
+  }, [user]);
 
   async function getAllComments() {
     const commentsRef = collection(db, "comments");

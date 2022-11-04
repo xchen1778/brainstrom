@@ -178,6 +178,7 @@
   max-width: 30rem;
   width: 90%;
   z-index: 20;
+  animation: fade 300ms ease;
 
   .deleteTitle {
     font-family: $header;

@@ -29,6 +29,8 @@ function EditIdea({ id, idea, images, setEditOn }) {
     const end = editIdeaTextArea.value.length;
     editIdeaTextArea.setSelectionRange(end, end);
     editIdeaTextArea.focus();
+    editIdeaTextArea.style.height =
+      editIdeaTextArea.scrollHeight.toString() + "px";
   }, []);
 
   async function handleEdit(id) {

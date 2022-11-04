@@ -372,12 +372,14 @@ function Profile() {
       updateProfile(auth.currentUser, {
         photoURL: url,
       });
-      route.push({
-        pathname: "/loading",
-        query: {
-          uId: window.localStorage.getItem("userId"),
-        },
-      });
+      setTimeout(() => {
+        route.push({
+          pathname: "/loading",
+          query: {
+            uId: window.localStorage.getItem("userId"),
+          },
+        });
+      }, 300);
     }
   }
 
