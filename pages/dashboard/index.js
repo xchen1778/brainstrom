@@ -149,7 +149,7 @@ function Dashboard() {
 
   async function getFirstIdeas() {
     const ideasRef = collection(db, "ideas");
-    const q = query(ideasRef, orderBy("timestamp", "desc"), limit(5));
+    const q = query(ideasRef, orderBy("timestamp", "desc"), limit(6));
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       setAllIdeas(
         querySnapshot.docs.map((doc) => ({
@@ -169,7 +169,7 @@ function Dashboard() {
         ideasRef,
         orderBy("timestamp", "desc"),
         startAfter(latestDoc),
-        limit(5)
+        limit(6)
       );
       const allLoadedIdeas = [];
       const unsubscribe = onSnapshot(q, (querySnapshot) => {
