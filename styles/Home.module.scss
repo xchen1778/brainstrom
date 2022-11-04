@@ -6,17 +6,15 @@
   height: 100vh;
   margin: 0 auto;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
 
   .loginHeader {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    position: absolute;
-    max-width: 67.5rem;
-    width: 85%;
-    top: 4rem;
+    width: 100%;
+    margin: 4rem auto;
 
     .logoLink {
       cursor: pointer;
@@ -120,7 +118,7 @@
     margin-top: 2.5rem;
 
     .loginHeader {
-      top: 3rem;
+      margin-top: 0.9rem;
       .logoLink {
         .logo {
           height: 1.8rem;

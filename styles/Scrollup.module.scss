@@ -19,3 +19,9 @@
     background-color: $dark-blue;
   }
 }
+
+@include tablet() {
+  .scrollUp {
+    right: 1.5rem;
+  }
+}
